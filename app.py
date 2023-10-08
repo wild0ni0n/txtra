@@ -5,6 +5,8 @@ import yaml
 import re
 import glob
 from typing import List, Optional
+import argparse
+from dataclasses import dataclass
 
 
 TEMPLATE_DIR = "provider/*.yml"
@@ -35,6 +37,20 @@ class Template:
             else:
                 return None
 
+@dataclass
+class Domain:
+    name: str
+
+    def __post_init__(self):
+        if self.name[:4] == "http":
+            o = urlparse(self.name)
+            self.name = o.hostname
+    
+    def __str__(self) -> str:
+        return self.name
+    def __repr__(self) -> str:
+        return  self.name
+
 
 def load_templates() -> List[Template]:
     templates = []
@@ -53,11 +69,11 @@ def detect_provider_from_txt(txt, templates: List[Template]) -> Optional[Templat
     return None
 
 
-def stdout_mode(domains):
+def stdout_mode(domains: List[Domain]):
     print("[INF] Check {} domains".format(len(domains)))
     for domain in domains:
         try:
-            answers = dns.resolver.resolve(domain, "TXT")
+            answers = dns.resolver.resolve(domain.name, "TXT")
             for rdata in answers:
                 for data in rdata.strings:
                     txtval = data.decode('utf-8')
@@ -90,9 +106,27 @@ def load_list(file, limit=None):
 
     return p_lines
 
+def argparse_setup() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--domain', help='Specify domain')
+    parser.add_argument('-f', '--file', help='Specify domains file', type=argparse.FileType("r", encoding="utf-8"))
+    #parser.add_argument('-o', 'Specify output file')
+    return parser
 
 if __name__ == "__main__":
+    parser = argparse_setup()
+    args = parser.parse_args()
+
     templates = load_templates()
-    # domains = load_list('', 30)
-    domains = ["example.com"]
-    stdout_mode(domains)
+
+    if args.domain:
+        domain = Domain(args.domain)
+        stdout_mode([domain])
+        exit()
+    
+    if args.file != None:
+        lines = args.file.read().splitlines()
+        domains = list(map(lambda v: Domain(v), lines))
+        print(domains)
+        stdout_mode(domains)
+        exit()
