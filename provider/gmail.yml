@@ -1,0 +1,11 @@
+id: gmail
+
+info:
+  name: GMail
+  author: wild0ni0n
+  category: Cloud
+
+rule:
+  type: regex
+  regex:
+    - "google-site-verification=([A-Za-z0-9.]+)"

@@ -1,0 +1,11 @@
+id: apple-business-manager
+
+info:
+  name: Apple Business Manager
+  author: wild0ni0n
+  category: Cloud
+
+rule:
+  type: regex
+  regex:
+    - "apple-domain-verification=([A-Za-z0-9.]+)"

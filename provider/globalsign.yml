@@ -1,0 +1,11 @@
+id: globalsign
+
+info:
+  name: Global Sign
+  author: wild0ni0n
+  category: Certificate
+
+rule:
+  type: regex
+  regex:
+    - "_globalsign-domain-verification=([A-Za-z0-9.]+)"

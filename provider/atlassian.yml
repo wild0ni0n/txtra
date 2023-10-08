@@ -1,0 +1,11 @@
+id: atlassian
+
+info:
+  name: Atlassian
+  author: wild0ni0n
+  category: Cloud
+
+rule:
+  type: regex
+  regex:
+    - "atlassian-domain-verification=([A-Za-z0-9.]+)"

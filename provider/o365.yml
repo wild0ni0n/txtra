@@ -1,0 +1,11 @@
+id: o365
+
+info:
+  name: Microsoft Office 365
+  author: wild0ni0n
+  category: Cloud
+
+rule:
+  type: regex
+  regex:
+    - "[mMsS]=ms([0-9.]+)"
