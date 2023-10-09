@@ -8,4 +8,6 @@ info:
 rule:
   type: regex
   regex:
-    - "[mMsS]=ms([0-9.]+)"
+    - "[mMsS]=ms(?P<token>[0-9.]+)"
+  params:
+    - token
