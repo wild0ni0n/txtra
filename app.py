@@ -129,26 +129,20 @@ def stdout_mode(domains: List[Domain]):
         records.scan(templates=templates)
         for record in records:
             if record.is_matched:
-                if record.token != "":
-                    print(
-                        Fore.YELLOW
-                        + "[{}]".format(records.domain)
-                        + Fore.BLUE
-                        + " [{}] ".format(record.provider)
-                        + Fore.CYAN
-                        + " [token={}] ".format(record.token)
-                        + Fore.YELLOW
-                        + "{}".format(record.value)
-                    )
-                else:
-                    print(
-                        Fore.YELLOW
-                        + "[{}]".format(records.domain)
-                        + Fore.BLUE
-                        + " [{}] ".format(record.provider)
-                        + Fore.YELLOW
-                        + "{}".format(record.value)
-                    )
+                token_string = (
+                    Fore.CYAN + " [token={}] ".format(record.token)
+                    if record.token
+                    else ""
+                )
+                print(
+                    Fore.YELLOW
+                    + "[{}]".format(records.domain)
+                    + Fore.BLUE
+                    + " [{}] ".format(record.provider)
+                    + token_string
+                    + Fore.YELLOW
+                    + "{}".format(record.value)
+                )
             else:
                 print(Fore.YELLOW + "[{}] {} ".format(records.domain, record.value))
 
