@@ -8,4 +8,6 @@ info:
 rule:
   type: regex
   regex:
-    - "_globalsign-domain-verification=([A-Za-z0-9.]+)"
+    - "_globalsign-domain-verification=(?P<token>[A-Za-z0-9.]+)"
+  params:
+    - token

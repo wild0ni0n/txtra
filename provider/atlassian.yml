@@ -8,4 +8,6 @@ info:
 rule:
   type: regex
   regex:
-    - "atlassian-domain-verification=([A-Za-z0-9.]+)"
+    - "atlassian-domain-verification=(?P<token>[A-Za-z0-9.]+)"
+  params:
+    - token
