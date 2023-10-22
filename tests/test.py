@@ -1,4 +1,11 @@
-from app import Domain, TxtRecord, TxtRecords, load_templates
+from app import (
+    Domain,
+    TxtRecord,
+    TxtRecords,
+    load_templates,
+    argparse_setup,
+    stdout_mode,
+)
 
 import unittest
 from unittest.mock import MagicMock
