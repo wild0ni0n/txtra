@@ -2,6 +2,8 @@ import re
 import sys
 import glob
 import argparse
+import csv
+
 from urllib.parse import urlparse
 from typing import List, Optional
 from dataclasses import dataclass
@@ -139,7 +141,10 @@ class TxtRecords:
         Returns:
             List[TxtRecord]: txt record list
         """
-        answers = resolver.resolve(self.domain.name, "TXT")
+        try:
+            answers = resolver.resolve(self.domain.name, "TXT")
+        except resolver.LifetimeTimeout as e:
+            raise resolver.LifetimeTimeout from e
         for rdata in answers:  # type:ignore
             for data in rdata.strings:
                 self.records.append(TxtRecord(data.decode("utf-8")))
@@ -158,74 +163,154 @@ class TxtRecords:
         yield from self.records
 
 
-def load_templates() -> List[Template]:
-    """Load a templates"""
-    templates = []
-    path_list = glob.glob(TEMPLATE_DIR)
-    for path in path_list:
-        _t = Template()
-        _t.loads(path)
-        templates.append(_t)
-    return templates
+class Txtra:
+    """txtra class"""
 
+    def __init__(self) -> None:
+        self.templates = self.load_templates()
 
-TEMPLATES = load_templates()
+    def load_templates(self) -> List[Template]:
+        """Load a templates"""
+        templates = []
+        path_list = glob.glob(TEMPLATE_DIR)
+        for path in path_list:
+            _t = Template()
+            _t.loads(path)
+            templates.append(_t)
+        return templates
 
+    def stdout_mode(self, args, domains: List[Domain]):
+        """standard output mode"""
+        print(f"[INF] Check {len(domains)} domains")
+        print("[INF] No Scan Mode") if args.no_scan else ""
+        for domain in domains:
+            records = TxtRecords(domain=domain)
+            try:
+                records.resolve()
+            except resolver.NoAnswer:
+                continue
+            except resolver.LifetimeTimeout:
+                continue
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                continue  # Optional: handle other exceptions and continue to the next iteration
 
-def stdout_mode(target_domains: List[Domain]):
-    """standard output mode"""
-    print(f"[INF] Check {len(target_domains)} domains")
-    for target_domain in target_domains:
-        records = TxtRecords(domain=target_domain)
-        try:
-            records.resolve()
-        except resolver.NoAnswer:
-            continue
-        records.scan(templates=TEMPLATES)
-        for record in records:
-            if record.is_matched:
-                token_string = (
-                    Fore.CYAN + f" [token={record.token}] " if record.token else ""
-                )
-                print(
-                    Fore.YELLOW
-                    + f"[{records.domain}]"
-                    + Fore.BLUE
-                    + f" [{record.provider}] "
-                    + token_string
-                    + Fore.YELLOW
-                    + f"{record.value}"
-                )
+            if args.no_scan:
+                for record in records:
+                    print(Fore.YELLOW + f"[{records.domain}] " + f"{record.value}")
             else:
-                print(Fore.YELLOW + f"[{records.domain}] {record.value} ")
+                records.scan(templates=self.templates)
+                for record in records:
+                    if record.is_matched:
+                        token_string = (
+                            Fore.CYAN + f" [token={record.token}] "
+                            if record.token
+                            else ""
+                        )
+                        print(
+                            Fore.YELLOW
+                            + f"[{records.domain}]"
+                            + Fore.BLUE
+                            + f" [{record.provider}] "
+                            + token_string
+                            + Fore.YELLOW
+                            + f"{record.value}"
+                        )
+                    else:
+                        print(Fore.YELLOW + f"[{records.domain}] {record.value} ")
 
+    def csv_mode(self, args, domains: List[Domain], path="./output.csv"):
+        """csv mode"""
 
-def argparse_setup() -> argparse.ArgumentParser:
-    """argparse setup function"""
-    p = argparse.ArgumentParser()
-    p.add_argument("-d", "--domain", help="Specify domain")
-    p.add_argument(
-        "-f",
-        "--file",
-        help="Specify domains file",
-        type=argparse.FileType("r", encoding="utf-8"),
-    )
-    # parser.add_argument('-o', 'Specify output file')
-    return p
+        for domain in domains:
+            records = TxtRecords(domain=domain)
+
+            try:
+                records.resolve()
+            except resolver.LifetimeTimeout:
+                continue
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                continue  # Optional: handle other exceptions and continue to the next iteration
+
+            if args.no_scan:
+                with open(path, "a") as f:
+                    w = csv.writer(f)
+                    for record in records:
+                        w.writerow([records.domain, record.value])
+            else:
+                records.scan(templates=self.templates)
+                with open(path, "a") as f:
+                    w = csv.writer(f)
+                    for record in records:
+                        if record.is_matched:
+                            token_string = record.token if record.token else ""
+                            w.writerow(
+                                [
+                                    records.domain,
+                                    record.provider,
+                                    token_string,
+                                    record.value,
+                                ]
+                            )
+                        else:
+                            w.writerow([records.domain, record.value])
+
+    def argparse_setup(self, args) -> argparse.Namespace:
+        """argparse setup function"""
+        p = argparse.ArgumentParser()
+        p.add_argument("-d", "--domain", help="Specify domain")
+        p.add_argument(
+            "-f",
+            "--file",
+            help="Specify domains file",
+            type=argparse.FileType("r", encoding="utf-8"),
+        )
+        p.add_argument(
+            "-s",
+            "--no-scan",
+            help="No template scan is performed. Txtra returns only txt records",
+            action="store_true",
+        )
+        p.add_argument(
+            "-c",
+            "--csv",
+            help="Output in CSV format. Cannot be used in conjunction with the \
+                --json option.",
+            action="store_true",
+        )
+        p.add_argument(
+            "-j",
+            "--json",
+            help="Output in json format. Cannot be used in conjunction with the \
+                --csv option.",
+            action="store_true",
+        )
+        # parser.add_argument('-o', 'Specify output file')
+        return p.parse_args(args)
 
 
 if __name__ == "__main__":
-    parser = argparse_setup()
-    args = parser.parse_args()
+    txtra = Txtra()
+    args = txtra.argparse_setup(sys.argv[1:])
+
+    if args.csv and args.json:
+        print("`--csv` and `--json` options cannot be used together.")
+        sys.exit(0)
 
     if args.domain:
         domain = Domain(args.domain)
-        stdout_mode([domain])
+        if args.csv:
+            txtra.csv_mode(args, [domain])
+        else:
+            txtra.stdout_mode(args, [domain])
         sys.exit(0)
 
     if args.file is not None:
         lines = args.file.read().splitlines()
         domains = list(map(lambda v: Domain(v), lines))
-        print(domains)
-        stdout_mode(domains)
+        if args.csv:
+            txtra.csv_mode(args, domains)
+        else:
+            txtra.stdout_mode(args, domains)
         sys.exit(0)
