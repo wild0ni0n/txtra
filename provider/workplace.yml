@@ -1,0 +1,13 @@
+id: workplace
+
+info:
+  name: Workplace
+  author: wild0ni0n
+  category: Automation
+
+rule:
+  type: regex
+  regex:
+    - "workplace-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

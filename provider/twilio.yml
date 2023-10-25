@@ -1,0 +1,13 @@
+id: twilio
+
+info:
+  name: Twilio
+  author: wild0ni0n
+  category: Communication
+
+rule:
+  type: regex
+  regex:
+    - "twilio-domain-verification=(?P<token>[0-9a-f.]+)"
+  params:
+    - token

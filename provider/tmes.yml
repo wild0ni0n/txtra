@@ -1,0 +1,13 @@
+id: tmes
+
+info:
+  name: Trend Micro
+  author: wild0ni0n
+  category: Security
+
+rule:
+  type: regex
+  regex:
+    - "tmes=(?P<token>[0-9a-f]+)"
+  params:
+    - token

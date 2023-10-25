@@ -1,0 +1,13 @@
+id: Zapier
+
+info:
+  name: Zapier
+  author: wild0ni0n
+  category: Automation
+
+rule:
+  type: regex
+  regex:
+    - "zapier-domain-verification-challenge=(?P<token>[A-Za-z0-9-]+)"
+  params:
+    - token

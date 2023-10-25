@@ -1,0 +1,13 @@
+id: webaccel
+
+info:
+  name: SAKURA Web Accelerator
+  author: wild0ni0n
+  category: CDN
+
+rule:
+  type: regex
+  regex:
+    - "webaccel=(?P<token>[A-Za-z0-9.-]+)"
+  params:
+    - token

@@ -1,13 +1,13 @@
-id: gmail
+id: zoho
 
 info:
-  name: GMail
+  name: Zoho Mail
   author: wild0ni0n
   category: Mail
 
 rule:
   type: regex
   regex:
-    - "google-site-verification=(?P<token>[A-Za-z0-9.]+)"
+    - "zoho-verification=(?P<token>[A-Za-z0-9]+).zmverify.zoho.com"
   params:
     - token

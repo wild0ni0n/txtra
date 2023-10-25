@@ -1,0 +1,13 @@
+id: wrike
+
+info:
+  name: wrike
+  author: wild0ni0n
+  category: Automation
+
+rule:
+  type: regex
+  regex:
+    - "wrike-verification=(?P<token>[A-Za-z0-9-]+)"
+  params:
+    - token

@@ -1,0 +1,13 @@
+id: zoom
+
+info:
+  name: Zoom
+  author: wild0ni0n
+  category: Communication
+
+rule:
+  type: regex
+  regex:
+    - "ZOOM_verify_(?P<token>[A-Za-z0-9.\-_]+)"
+  params:
+    - token

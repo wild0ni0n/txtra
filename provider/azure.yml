@@ -1,0 +1,13 @@
+id: azure
+
+info:
+  name: Azure
+  author: wild0ni0n
+  category: Cloud
+
+rule:
+  type: regex
+  regex:
+    - "(?P<token>[A-Za-z0-9.-]+)\.azurewebsites\.net"
+  params:
+    - token

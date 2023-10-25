@@ -1,0 +1,14 @@
+id: line-works
+
+info:
+  name: LINE WORKS
+  author: wild0ni0n
+  category: Communication
+
+rule:
+  type: regex
+  regex:
+    - "worksmobile-certification=(?P<token>[A-Za-z0-9-]+)"
+    - "worksmobile\.certification\.(?P<token>[A-Za-z0-9.-]+)"
+  params:
+    - token
