@@ -4,6 +4,6 @@ txtra は、対象のドメインの名前解決で返される txt レコード
 
 # Installation
 
-`pip install .`
+`pip install -r requirement.txt`
 
 # Usage
