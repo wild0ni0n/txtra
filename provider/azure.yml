@@ -8,6 +8,6 @@ info:
 rule:
   type: regex
   regex:
-    - "(?P<token>[A-Za-z0-9.-]+)\.azurewebsites\.net"
+    - "(?P<token>[A-Za-z0-9.-]+).azurewebsites.net"
   params:
     - token
