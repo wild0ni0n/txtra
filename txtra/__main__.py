@@ -289,8 +289,7 @@ class Txtra:
         # parser.add_argument('-o', 'Specify output file')
         return p.parse_args(args)
 
-
-if __name__ == "__main__":
+def main():
     txtra = Txtra()
     args = txtra.argparse_setup(sys.argv[1:])
 
@@ -314,3 +313,6 @@ if __name__ == "__main__":
         else:
             txtra.stdout_mode(args, domains)
         sys.exit(0)
+
+if __name__ == "__main__":
+    main()
