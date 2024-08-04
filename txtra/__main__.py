@@ -1,18 +1,16 @@
 import re
 import sys
-import glob
 import argparse
 import csv
+import json
 
 from urllib.parse import urlparse
 from typing import List, Optional
 from dataclasses import dataclass
 from dns import resolver
 from colorama import Fore
+from importlib import resources
 import yaml
-
-
-TEMPLATE_DIR = "provider/*.yml"
 
 
 class Template:
@@ -172,8 +170,8 @@ class Txtra:
     def load_templates(self) -> List[Template]:
         """Load a templates"""
         templates = []
-        path_list = glob.glob(TEMPLATE_DIR)
-        for path in path_list:
+        provider_dir = resources.files('txtra') / 'provider'
+        for path in provider_dir.glob('*.yml'):
             _t = Template()
             _t.loads(path)
             templates.append(_t)
@@ -255,6 +253,44 @@ class Txtra:
                             )
                         else:
                             w.writerow([records.domain, record.value])
+    
+    def json_mode(self, args, domains: List[Domain], path="./output.json"):
+        """json mode"""
+        output_json = {}
+        for domain in domains:
+            records = TxtRecords(domain=domain)
+
+            try:
+                records.resolve()
+            except resolver.LifetimeTimeout:
+                continue
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+                continue  # Optional: handle other exceptions and continue to the next iteration
+
+            if args.no_scan:
+                output_json[str(domain)] = {
+                    'raw_records': [ record.value for record in records]
+                }
+                
+            else:
+                records.scan(templates=self.templates)
+                output_json[str(domain)] = {
+                    'raw_records': [ record.value for record in records]
+                }
+                output_json[str(domain)]['records'] = []
+                for record in records:
+                    if record.is_matched:
+                        token_string = record.token if record.token else ""
+                        
+                        output_json[str(domain)]['records'].append({
+                            "provider": record.provider,
+                            "token": token_string,
+                            "value": record.value,
+                        })
+        with open(path, 'w', encoding='utf-8') as f:
+            f.write(json.dumps(output_json))
+
 
     def argparse_setup(self, args) -> argparse.Namespace:
         """argparse setup function"""
@@ -301,6 +337,8 @@ def main():
         domain = Domain(args.domain)
         if args.csv:
             txtra.csv_mode(args, [domain])
+        if args.json:
+            txtra.json_mode(args, [domain])
         else:
             txtra.stdout_mode(args, [domain])
         sys.exit(0)
@@ -310,6 +348,8 @@ def main():
         domains = list(map(lambda v: Domain(v), lines))
         if args.csv:
             txtra.csv_mode(args, domains)
+        if args.json:
+            txtra.json_mode(args, domains)
         else:
             txtra.stdout_mode(args, domains)
         sys.exit(0)
