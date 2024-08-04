@@ -208,3 +208,5 @@ pip-selfcheck.json
 
 sample/
 .vscode/*
+output.csv
+output.json
