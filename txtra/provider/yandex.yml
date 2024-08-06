@@ -1,0 +1,15 @@
+id: yandex
+
+info:
+  name: Yandex
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://www.webnots.com/yandex-webmaster-tools/
+
+rule:
+  type: regex
+  regex:
+    - "yandex-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token
