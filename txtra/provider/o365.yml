@@ -4,6 +4,8 @@ info:
   name: Microsoft Office 365
   author: wild0ni0n
   category: Cloud
+  references:
+    - https://docs.microsoft.com/en-us/office365/admin/setup/add-domain?view=o365-worldwide
 
 rule:
   type: regex

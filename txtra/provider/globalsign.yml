@@ -4,6 +4,8 @@ info:
   name: Global Sign
   author: wild0ni0n
   category: Certificate
+  references:
+    - https://support.globalsign.com/ssl/ssl-certificates-life-cycle/performing-domain-verification-dns-txt-record
 
 rule:
   type: regex

@@ -4,6 +4,8 @@ info:
   name: GMail
   author: wild0ni0n
   category: Mail
+  references:
+    - https://support.google.com/a/answer/2716802?hl=en
 
 rule:
   type: regex

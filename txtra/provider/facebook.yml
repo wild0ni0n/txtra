@@ -4,6 +4,8 @@ info:
   name: Facebook
   author: wild0ni0n
   category: Cloud
+  references:
+    - https://developers.facebook.com/docs/sharing/domain-verification/
 
 rule:
   type: regex

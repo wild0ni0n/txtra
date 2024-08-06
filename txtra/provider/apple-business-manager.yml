@@ -1,9 +1,12 @@
-id: apple-business-manager
+id: apple
 
 info:
-  name: Apple Business Manager
+  name: Apple
   author: wild0ni0n
   category: Cloud
+  references:
+    - https://support.apple.com/ja-jp/guide/apple-school-manager/axm48c3280c0/1/web/1
+    - https://support.apple.com/ja-jp/guide/apple-business-manager/axm48c3280c0/web
 
 rule:
   type: regex
