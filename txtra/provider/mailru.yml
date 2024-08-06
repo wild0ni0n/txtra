@@ -1,0 +1,13 @@
+id: mailru
+
+info:
+  name: Mail.Ru
+  author: wild0ni0n
+  category: Mail
+
+rule:
+  type: regex
+  regex:
+    - "mailru-verification: (?P<token>[A-Za-z0-9]+)"
+  params:
+    - token
