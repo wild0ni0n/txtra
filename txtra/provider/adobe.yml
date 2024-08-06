@@ -1,0 +1,15 @@
+id: adobe
+
+info:
+  name: Adobe
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://helpx.adobe.com/enterprise/using/verify-domain-ownership.html
+
+rule:
+  type: regex
+  regex:
+    - "[adobe-idp-site-verification]=(?P<token>[A-Za-z0-9.]+)"
+  params:
+    - token
