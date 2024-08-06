@@ -4,10 +4,12 @@ info:
   name: Atlassian
   author: wild0ni0n
   category: Cloud
+  references:
+    - https://confluence.atlassian.com/cloud/verify-a-domain-for-your-organization-873871234.html
 
 rule:
   type: regex
   regex:
-    - "atlassian-domain-verification=(?P<token>[A-Za-z0-9.]+)"
+    - "atlassian-domain-verification=(?P<token>[A-Za-z0-9.\/]+)"
   params:
     - token
