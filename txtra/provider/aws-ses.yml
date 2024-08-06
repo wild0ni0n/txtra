@@ -1,0 +1,15 @@
+id: aws-ses
+
+info:
+  name: Amazon Simple Email
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html#verify-domain-procedure
+
+rule:
+  type: regex
+  regex:
+    - "amazonses:(?P<token>[A-Za-z0-9.+=_]+)"
+  params:
+    - token
