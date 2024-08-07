@@ -1,18 +1,14 @@
-from app import (
+from txtra.__main__ import (
     Domain,
+    Txtra,
     TxtRecord,
-    TxtRecords,
-    load_templates,
-    argparse_setup,
-    stdout_mode,
+    TxtRecords
 )
 
 import unittest
 from unittest.mock import MagicMock
 
-TEMPLATE_DIR = "../provider/*.yml"
-templates = load_templates()
-
+txtra = Txtra()
 
 class TestApp(unittest.TestCase):
     def mock_resolve(self, test_domain, test_txt_value) -> TxtRecords:
@@ -36,16 +32,16 @@ class TestApp(unittest.TestCase):
 
     def test_apple_vusiness_manager(self):
         records = self.mock_resolve("example.com", "apple-domain-verification=test")
-        records.scan(templates=templates)
+        records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Apple Business Manager")
+                self.assertEqual(record.provider, "Apple")
                 self.assertEqual(record.token, "test")
 
     def test_atlassian(self):
         records = self.mock_resolve("example.com", "atlassian-domain-verification=test")
-        records.scan(templates=templates)
+        records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
@@ -56,7 +52,7 @@ class TestApp(unittest.TestCase):
         records = self.mock_resolve(
             "example.com", "_globalsign-domain-verification=test"
         )
-        records.scan(templates=templates)
+        records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
@@ -65,7 +61,7 @@ class TestApp(unittest.TestCase):
 
     def test_gmail(self):
         records = self.mock_resolve("example.com", "google-site-verification=test")
-        records.scan(templates=templates)
+        records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
@@ -74,7 +70,7 @@ class TestApp(unittest.TestCase):
 
     def test_o365(self):
         records = self.mock_resolve("example.com", "ms=12345")
-        records.scan(templates=templates)
+        records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
