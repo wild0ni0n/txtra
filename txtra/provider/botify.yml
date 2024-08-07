@@ -1,0 +1,15 @@
+id: botify
+
+info:
+  name: Botify
+  author: wild0ni0n
+  category: Analytics
+  references:
+    - https://www.botify.com/blog/validate-website-ownership-botify-analytics-BA
+
+rule:
+  type: regex
+  regex:
+    - "botify-site-verification=(?P<token>[A-Za-z0-9\\-]+)"
+  params:
+    - token

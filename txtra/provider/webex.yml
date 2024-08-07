@@ -6,11 +6,14 @@ info:
   category: Collaboration
   references:
     - https://help.webex.com/en-us/article/cd6d84/Manage-your-domains
+    - https://help.webex.com/en-us/nxz79m5/Add-Verify-and-Claim-Domains
 
 rule:
   type: regex
   regex:
     - "webexdomainverification.(.*)=(?P<token>[A-Za-z0-9.\\-]+)"
     - "ciscocidomainverification=(?P<token>[A-Za-z0-9.\\-]+)"
+    - "cisco-ci-domain-verification=(?P<token>[a-f0-9]+)"
+    - "cisco-site-verification=(?P<token>[A-Za-z0-9.\\-]+)"
   params:
     - token

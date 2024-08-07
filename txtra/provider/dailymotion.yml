@@ -1,0 +1,15 @@
+id: dailymotion
+
+info:
+  name: dailymotion
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://faq.dailymotion.com/hc/en-us/articles/115008958347-Verify-your-domains
+
+rule:
+  type: regex
+  regex:
+    - "dailymotion-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

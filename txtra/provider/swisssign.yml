@@ -1,0 +1,15 @@
+id: swisssign
+
+info:
+  name: swisssign
+  author: wild0ni0n
+  category: Certificate
+  references:
+    - https://www.swisssign.com/news/detail~newsID=5d91caee-8fc7-4af9-b63b-eadae419ff29~.html
+
+rule:
+  type: regex
+  regex:
+    - "swisssign-check=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

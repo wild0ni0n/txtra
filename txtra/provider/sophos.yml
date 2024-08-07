@@ -1,0 +1,15 @@
+id: sophos
+
+info:
+  name: Sophos
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://docs.sophos.com/central/Customer/help/en-us/central/Customer/tasks/domainownershipgoogle.html
+
+rule:
+  type: regex
+  regex:
+    - "sophos-domain-verification=(?P<token>[a-f0-9]+)"
+  params:
+    - token

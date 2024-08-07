@@ -1,0 +1,15 @@
+id: logmein
+
+info:
+  name: logmein
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://support.logmeininc.com/openvoice/help/set-up-domains-ov710101
+
+rule:
+  type: regex
+  regex:
+    - "logmein-verification-code=(?P<token>[A-Za-z0-9\\-]+)"
+  params:
+    - token

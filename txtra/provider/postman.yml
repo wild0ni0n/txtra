@@ -1,0 +1,15 @@
+id: postman
+
+info:
+  name: Postman
+  author: wild0ni0n
+  category: Development
+  references:
+    - https://learning.getpostman.com/docs/postman/api_documentation/adding_and_verifying_custom_domains/
+
+rule:
+  type: regex
+  regex:
+    - "postman-domain-verification=(?P<token>[A-Za-z0-9\\-]+)"
+  params:
+    - token

@@ -8,6 +8,6 @@ info:
 rule:
   type: regex
   regex:
-    - "zapier-domain-verification-challenge=(?P<token>[A-Za-z0-9-]+)"
+    - "zapier-domain-verification-challenge=(?P<token>[A-Za-z0-9\\-]+)"
   params:
     - token

@@ -1,0 +1,15 @@
+id: statuspage
+
+info:
+  name: statuspage
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://help.statuspage.io/help/domain-ownership
+
+rule:
+  type: regex
+  regex:
+    - "status-page-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

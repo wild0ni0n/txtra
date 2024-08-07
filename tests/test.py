@@ -48,6 +48,33 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Adobe")
                 self.assertEqual(record.token, "test")
 
+    def test_android_mdm1(self):
+        records = self.mock_resolve("example.com", "android-enroll=http://example.com")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "android mobile mdm")
+                self.assertEqual(record.token, "http://example.com")
+
+    def test_android_mdm2(self):
+        records = self.mock_resolve("example.com", "android-mdm-enroll=http://example.com")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "android mobile mdm")
+                self.assertEqual(record.token, "http://example.com")
+
+    def test_anodot(self):
+        records = self.mock_resolve("example.com", "anodot-domain-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "anodot")
+                self.assertEqual(record.token, "test")
+
     def test_apple(self):
         records = self.mock_resolve("example.com", "apple-domain-verification=test")
         records.scan(templates=txtra.templates)
@@ -84,6 +111,24 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Azure")
                 self.assertEqual(record.token, "test")
 
+    def test_blitz(self):
+        records = self.mock_resolve("example.com", "blitz=test-1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Feedblitz")
+                self.assertEqual(record.token, "test-1234")
+
+    def test_botify(self):
+        records = self.mock_resolve("example.com", "botify-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Botify")
+                self.assertEqual(record.token, "test")
+
     def test_brave(self):
         records = self.mock_resolve("example.com", "brave-ledger-verification=test")
         records.scan(templates=txtra.templates)
@@ -93,7 +138,7 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Brave")
                 self.assertEqual(record.token, "test")
 
-    def test_citrix(self):
+    def test_citrix1(self):
         records = self.mock_resolve("example.com", "citrix-verification-code=test-1234")
         records.scan(templates=txtra.templates)
         for record in records:
@@ -101,6 +146,24 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Citrix")
                 self.assertEqual(record.token, "test-1234")
+
+    def test_citrix2(self):
+        records = self.mock_resolve("example.com", "citrix.mobile.ads.otp=test-1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Citrix")
+                self.assertEqual(record.token, "test-1234")
+
+    def test_dailymotion(self):
+        records = self.mock_resolve("example.com", "dailymotion-domain-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "dailymotion")
+                self.assertEqual(record.token, "test")
 
     def test_docusign(self):
         records = self.mock_resolve("example.com", "docusign=test")
@@ -169,6 +232,24 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "GMail")
                 self.assertEqual(record.token, "test")
 
+    def test_godaddy1(self):
+        records = self.mock_resolve("example.com", "DZC: test-test.com")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "GoDaddy Web Services")
+                self.assertEqual(record.token, "test-test.com")
+
+    def test_godaddy2(self):
+        records = self.mock_resolve("example.com", "godaddyverification=/Hoge==")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "GoDaddy Web Services")
+                self.assertEqual(record.token, "/Hoge==")
+
     def test_haveibeenpwned(self):
         records = self.mock_resolve("example.com", "have-i-been-pwned-verification=test")
         records.scan(templates=txtra.templates)
@@ -204,6 +285,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "loaderio")
                 self.assertEqual(record.token, "test") 
+             
+    def test_logmein(self):
+        records = self.mock_resolve("example.com", "logmein-verification-code=668e156b-f5d3-430e-9944-f1d4385d043e")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "logmein")
+                self.assertEqual(record.token, "668e156b-f5d3-430e-9944-f1d4385d043e") 
 
     def test_mailru(self):
         records = self.mock_resolve("example.com", "mailru-verification:test")
@@ -238,6 +328,7 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Microsoft Office 365")
                 self.assertEqual(record.token, "test123==")                              
+
     def test_pardot(self):
         records = self.mock_resolve("example.com", "pardot_foo.bar=test")
         records.scan(templates=txtra.templates)
@@ -246,7 +337,25 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "pardot")
                 self.assertEqual(record.token, "test")
-                         
+
+    def test_postman(self):
+        records = self.mock_resolve("example.com", "postman-domain-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Postman")
+                self.assertEqual(record.token, "test")
+
+    def test_protonmail(self):
+        records = self.mock_resolve("example.com", "protonmail-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "protonmail")
+                self.assertEqual(record.token, "test")
+                            
     def test_sendinblue(self):
         records = self.mock_resolve("example.com", "Sendinblue-code:123456789abcedf")
         records.scan(templates=txtra.templates)
@@ -254,7 +363,44 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "sendinblue")
-                self.assertEqual(record.token, "123456789abcedf")                             
+                self.assertEqual(record.token, "123456789abcedf")   
+                            
+    def test_sophos(self):
+        records = self.mock_resolve("example.com", "sophos-domain-verification=123456789abcedf")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Sophos")
+                self.assertEqual(record.token, "123456789abcedf") 
+
+    def test_statuspage(self):
+        records = self.mock_resolve("example.com", "status-page-domain-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "statuspage")
+                self.assertEqual(record.token, "test")  
+                   
+    def test_swisssign(self):
+        records = self.mock_resolve("example.com", "swisssign-check=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "swisssign")
+                self.assertEqual(record.token, "test")   
+                          
+    def test_tinfosecurity(self):
+        records = self.mock_resolve("example.com", "tinfoil-site-verification= test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "tinfosecurity")
+                self.assertEqual(record.token, "test")
+
     def test_tmes(self):
         records = self.mock_resolve("example.com", "tmes=test")
         records.scan(templates=txtra.templates)
@@ -273,7 +419,7 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Twilio")
                 self.assertEqual(record.token, "0123456789abcdef")
 
-    def test_webaccel(self):
+    def test_webaccel1(self):
         records = self.mock_resolve("example.com", "webaccel=0123456789abcdef")
         records.scan(templates=txtra.templates)
         for record in records:
@@ -281,6 +427,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "SAKURA Web Accelerator")
                 self.assertEqual(record.token, "0123456789abcdef")
+
+    def test_webaccel2(self):
+        records = self.mock_resolve("example.com", "webaccel: 01234; 56789; abcdef;")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "SAKURA Web Accelerator")
+                self.assertEqual(record.token, "01234; 56789; abcdef;")
 
     def test_webex1(self):
         records = self.mock_resolve("example.com", "webexdomainverification.hoge=01234-5678-9abc-def")
@@ -293,6 +448,24 @@ class TestApp(unittest.TestCase):
 
     def test_webex2(self):
         records = self.mock_resolve("example.com", "ciscocidomainverification=01234-5678-9abc-def")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.token, "01234-5678-9abc-def")
+
+    def test_webex3(self):
+        records = self.mock_resolve("example.com", "cisco-ci-domain-verification=0123456789abcdef")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.token, "0123456789abcdef")
+
+    def test_webex4(self):
+        records = self.mock_resolve("example.com", "cisco-site-verification=01234-5678-9abc-def")
         records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:

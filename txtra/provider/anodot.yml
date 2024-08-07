@@ -1,0 +1,15 @@
+id: anodot
+
+info:
+  name: anodot
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://support.anodot.com/hc/en-us/articles/360002933774-Google-OAuth-Authentication
+
+rule:
+  type: regex
+  regex:
+    - "anodot-domain-verification=(?P<token>[a-f0-9]+)"
+  params:
+    - token

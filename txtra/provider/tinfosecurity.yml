@@ -1,0 +1,13 @@
+id: tinfosecurity
+
+info:
+  name: tinfoilsecurity
+  author: wild0ni0n
+  category: Security
+
+rule:
+  type: regex
+  regex:
+    - "tinfoil-site-verification:\\s?(?P<token>[0-9a-f=]+)"
+  params:
+    - token

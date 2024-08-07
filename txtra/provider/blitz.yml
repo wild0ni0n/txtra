@@ -1,0 +1,15 @@
+id: blitz
+
+info:
+  name: Feedblitz
+  author: wild0ni0n
+  category: Analytics
+  references:
+    - https://www.feedblitz.com/quick-tips-where-can-i-edit-my-dkim-and-spf-authentication/
+
+rule:
+  type: regex
+  regex:
+    - "blitz=(?P<token>[A-Za-z0-9\\-]+)"
+  params:
+    - token

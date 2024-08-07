@@ -9,5 +9,6 @@ rule:
   type: regex
   regex:
     - "webaccel=(?P<token>[A-Za-z0-9.-]+)"
+    - "webaccel:\\s?(?P<token>.*)"
   params:
     - token

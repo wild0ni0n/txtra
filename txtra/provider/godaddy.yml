@@ -1,0 +1,17 @@
+id: godaddy
+
+info:
+  name: GoDaddy Web Services
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://www.godaddy.com/community/SSL-And-Security/SSL-Domain-Verification-with-DNS/td-p/42604
+    - https://www.godaddy.com/help/verify-domain-ownership-html-or-dns-for-my-ssl-certificate-7452
+
+rule:
+  type: regex
+  regex:
+    - "DZC:\\s?(?P<token>[A-Za-z0-9.\\-]+)"
+    - "godaddyverification=(?P<token>[A-Za-z0-9/=]+)"
+  params:
+    - token
