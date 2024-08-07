@@ -10,6 +10,6 @@ info:
 rule:
   type: regex
   regex:
-    - "docusign=(?P<token>[A-Za-z0-9.\-]+)"
+    - "docusign=(?P<token>[A-Za-z0-9.\\-]+)"
   params:
     - token
