@@ -55,9 +55,10 @@ class Template:
             return None.
         """
         if self.rule["type"] == "regex":
-            m = re.search(self.rule["regex"][0], value)
-            if m:
-                return m
+            for pattern in self.rule["regex"]:
+                m = re.search(pattern, value)
+                if m:
+                    return m
         return None
 
     def get_paramname(self) -> Optional[List[str]]:
