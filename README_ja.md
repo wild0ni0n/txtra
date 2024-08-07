@@ -1,6 +1,6 @@
 # txtra
 
-txtra(txt record analyzer) is a tool that profiles the cloud services used by an organization using the txt records returned by name resolution for the domain in question.
+txtra は、対象のドメインの名前解決で返される txt レコードを使用して、組織が使用しているクラウドサービスをプロファイリングするツールです。
 
 # Installation
 
@@ -8,8 +8,7 @@ txtra(txt record analyzer) is a tool that profiles the cloud services used by an
 
 # Usage
 
-Options:
-
+オプション:
 ```bash
 # txtra -h
 usage: txtra [-h] [-d DOMAIN] [-f FILE] [-s] [-c] [-j]
@@ -24,7 +23,7 @@ options:
   -j, --json            Output in json format. Cannot be used in conjunction with the --csv option.
 ```
 
-Example:
+例:
 ```bash
 # txtra -d google.com   
 [INF] Check 1 domains
