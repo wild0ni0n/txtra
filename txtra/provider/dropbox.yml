@@ -1,0 +1,15 @@
+id: dropbox
+
+info:
+  name: Dropbox
+  author: wild0ni0n
+  category: Collaboration
+  references:
+    - https://help.dropbox.com/teams-admins/admin/domain-verification-invite-enforcement
+
+rule:
+  type: regex
+  regex:
+    - "dropbox-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

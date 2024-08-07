@@ -1,0 +1,13 @@
+id: citrix
+
+info:
+  name: Citrix
+  author: wild0ni0n
+  category: Collaboration
+
+rule:
+  type: regex
+  regex:
+    - "citrix-verification-code=(?P<token>[A-Za-z0-9.\\-]+)"
+  params:
+    - token

@@ -1,0 +1,15 @@
+id: haveibeenpwned
+
+info:
+  name: Have I been pwned
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://haveibeenpwned.com/DomainSearch
+
+rule:
+  type: regex
+  regex:
+    - "have-i-been-pwned-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

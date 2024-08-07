@@ -1,0 +1,15 @@
+id: sendinblue
+
+info:
+  name: sendinblue
+  author: wild0ni0n
+  category: Analytics
+  references:
+    - https://help.sendinblue.com/hc/en-us/articles/115000240344-Step-1-Delegating-your-subdomain
+
+rule:
+  type: regex
+  regex:
+    - "Sendinblue-code:(?P<token>[0-9a-f]+)"
+  params:
+    - token

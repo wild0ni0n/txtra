@@ -1,0 +1,15 @@
+id: loaderio
+
+info:
+  name: loaderio
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://support.loader.io/article/20-verifying-an-app
+
+rule:
+  type: regex
+  regex:
+    - "loaderio=(?P<token>[A-Za-z0-9\\-]+)"
+  params:
+    - token

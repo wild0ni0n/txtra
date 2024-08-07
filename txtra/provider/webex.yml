@@ -1,0 +1,16 @@
+id: webex
+
+info:
+  name: webex
+  author: wild0ni0n
+  category: Collaboration
+  references:
+    - https://help.webex.com/en-us/article/cd6d84/Manage-your-domains
+
+rule:
+  type: regex
+  regex:
+    - "webexdomainverification.(.*)=(?P<token>[A-Za-z0-9.\\-]+)"
+    - "ciscocidomainverification=(?P<token>[A-Za-z0-9.\\-]+)"
+  params:
+    - token

@@ -11,5 +11,6 @@ rule:
   type: regex
   regex:
     - "[mMsS]=ms(?P<token>[0-9.]+)"
+    - "mscid=(?P<token>[A-Za-z0-9,\\-=]+)"
   params:
     - token

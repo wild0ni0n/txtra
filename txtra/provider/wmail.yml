@@ -1,0 +1,15 @@
+id: wmail
+
+info:
+  name: wmail
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://blog.wavebox.io/introducing-wavebox/
+
+rule:
+  type: regex
+  regex:
+    - "wmail-verification:\\s?(?P<token>[a-f0-9]+)"
+  params:
+    - token

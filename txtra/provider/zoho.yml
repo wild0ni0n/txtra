@@ -4,6 +4,8 @@ info:
   name: Zoho Mail
   author: wild0ni0n
   category: Mail
+  references:
+    - https://www.zoho.com/mail/help/adminconsole/domain-verification.html
 
 rule:
   type: regex
