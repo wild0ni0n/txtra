@@ -291,7 +291,7 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "webex")
                 self.assertEqual(record.token, "01234-5678-9abc-def")
 
-    def test_webex_2(self):
+    def test_webex2(self):
         records = self.mock_resolve("example.com", "ciscocidomainverification=01234-5678-9abc-def")
         records.scan(templates=txtra.templates)
         for record in records:
