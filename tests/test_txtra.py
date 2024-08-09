@@ -183,6 +183,24 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Dropbox")
                 self.assertEqual(record.token, "test")
 
+    def test_dynatrace(self):
+        records = self.mock_resolve("example.com", "Dynatrace-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Dynatrace")
+                self.assertEqual(record.token, "test")
+    
+    def test_dynatrace2(self):
+        records = self.mock_resolve("example.com", "dynatrace-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Dynatrace")
+                self.assertEqual(record.token, "test")
+
     def test_facebook(self):
         records = self.mock_resolve("example.com", "facebook-domain-verification=test")
         records.scan(templates=txtra.templates)
@@ -257,6 +275,15 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Have I been pwned")
+                self.assertEqual(record.token, "test")
+
+    def test_knowbe4(self):
+        records = self.mock_resolve("example.com", "knowbe4-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "knowbe4")
                 self.assertEqual(record.token, "test")
 
     def test_line_works1(self):

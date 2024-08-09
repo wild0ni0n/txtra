@@ -1,0 +1,15 @@
+id: knowbe4
+
+info:
+  name: knowbe4
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://support.knowbe4.com/hc/en-us/articles/360013430414-How-to-Add-and-Verify-Allowed-Domains
+
+rule:
+  type: regex
+  regex:
+    - "knowbe4-site-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

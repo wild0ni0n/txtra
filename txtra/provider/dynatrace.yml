@@ -1,0 +1,13 @@
+id: dynatrace
+
+info:
+  name: Dynatrace
+  author: wild0ni0n
+  category: Security
+
+rule:
+  type: regex
+  regex:
+    - "[Dd]ynatrace-site-verification=(?P<token>[A-Za-z0-9\\-_]+)"
+  params:
+    - token
