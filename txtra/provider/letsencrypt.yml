@@ -1,0 +1,17 @@
+id: security
+
+
+info:
+  name: Let's Encript
+
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://letsencrypt.org/docs/challenge-types/
+
+rule:
+  type: regex
+  regex:
+    - "_acme-challenge=(?P<token>[A-Za-f0-9\\-_]+)"
+  params:
+    - token

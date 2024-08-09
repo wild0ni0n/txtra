@@ -1,0 +1,17 @@
+id: bugcrowd
+
+
+info:
+  name: bugcrowd
+
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://docs.bugcrowd.com/docs/okta
+
+rule:
+  type: regex
+  regex:
+    - "bugcrowd-verification=(?P<token>[a-f0-9]+)"
+  params:
+    - token

@@ -1,0 +1,15 @@
+id: t-systems
+
+info:
+  name: t-systems
+  author: wild0ni0n
+  category: Certificate
+  references:
+    - https://www.telesec.de/en/serverpass-en/support/domain-control/20-serverpass/640-verifiy-via-dns-entry
+
+rule:
+  type: regex
+  regex:
+    - "_telesec-domain-validation=(?P<token>[A-F0-9]+)"
+  params:
+    - token

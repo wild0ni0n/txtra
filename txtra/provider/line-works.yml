@@ -4,6 +4,8 @@ info:
   name: LINE WORKS
   author: wild0ni0n
   category: Communication
+  references:
+    - https://line.worksmobile.com/jp/en/
 
 rule:
   type: regex

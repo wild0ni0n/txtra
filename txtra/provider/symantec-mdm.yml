@@ -1,0 +1,12 @@
+id: symantect-mdm
+
+info:
+  name: Symantec MDM
+  author: wild0ni0n
+  category: Security
+rule:
+  type: regex
+  regex:
+    - "OSIAGENTREGURL=(?P<token>[A-Za-z0-9\\-_]+)"
+  params:
+    - token

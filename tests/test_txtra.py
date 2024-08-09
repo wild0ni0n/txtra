@@ -138,6 +138,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Brave")
                 self.assertEqual(record.token, "test")
 
+    def test_bugcrowd(self):
+        records = self.mock_resolve("example.com", "bugcrowd-verification=abcdef0123456789")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "bugcrowd")
+                self.assertEqual(record.token, "abcdef123456789")
+
     def test_citrix1(self):
         records = self.mock_resolve("example.com", "citrix-verification-code=test-1234")
         records.scan(templates=txtra.templates)
@@ -285,6 +294,16 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "knowbe4")
                 self.assertEqual(record.token, "test")
+          
+    def test_letsencript(self):
+        records = self.mock_resolve("example.com", "_acme-challenge=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Let's Encrypt")
+                self.assertEqual(record.token, "test")      
+             
 
     def test_line_works1(self):
         records = self.mock_resolve("example.com", "worksmobile-certification=test")
@@ -446,7 +465,34 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "swisssign")
                 self.assertEqual(record.token, "test")   
-                          
+                   
+    def test_symantec_mdm(self):
+        records = self.mock_resolve("example.com", "OSIAGENTREGURL=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Symantec MDM")
+                self.assertEqual(record.token, "test")   
+                    
+    def test_t_systems(self):
+        records = self.mock_resolve("example.com", "_telesec-domain-validation=TEST")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "t-systems")
+                self.assertEqual(record.token, "TEST")   
+                    
+    def test_teamviewer(self):
+        records = self.mock_resolve("example.com", "teamviewer-sso-verification=Test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "teamviewer")
+                self.assertEqual(record.token, "Test")   
+                    
     def test_tinfosecurity(self):
         records = self.mock_resolve("example.com", "tinfoil-site-verification= test")
         records.scan(templates=txtra.templates)

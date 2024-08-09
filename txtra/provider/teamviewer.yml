@@ -1,0 +1,15 @@
+id: teamviewer
+
+info:
+  name: teamviewer
+  author: wild0ni0n
+  category: Certificate
+  references:
+    - https://community.teamviewer.com/t5/Knowledge-Base/Single-Sign-On-SSO/ta-p/30784
+
+rule:
+  type: regex
+  regex:
+    - "teamviewer-sso-verification=(?P<token>[A-Fa-f0-9\\-_]+)"
+  params:
+    - token
