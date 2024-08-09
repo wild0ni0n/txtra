@@ -322,6 +322,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "logmein")
                 self.assertEqual(record.token, "668e156b-f5d3-430e-9944-f1d4385d043e") 
 
+    def test_mailigen(self):
+        records = self.mock_resolve("example.com", "mailigen-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "mailigen")
+                self.assertEqual(record.token, "test")
+
     def test_mailru(self):
         records = self.mock_resolve("example.com", "mailru-verification:test")
         records.scan(templates=txtra.templates)
@@ -330,6 +339,7 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Mail.Ru")
                 self.assertEqual(record.token, "test")
+
         records = self.mock_resolve("example.com", "mailru-verification: test")
         records.scan(templates=txtra.templates)
         for record in records:
@@ -391,7 +401,16 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "sendinblue")
                 self.assertEqual(record.token, "123456789abcedf")   
-                            
+                             
+    def test_segment(self):
+        records = self.mock_resolve("example.com", "segment-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "segment")
+                self.assertEqual(record.token, "test")  
+                           
     def test_sophos(self):
         records = self.mock_resolve("example.com", "sophos-domain-verification=123456789abcedf")
         records.scan(templates=txtra.templates)
@@ -400,6 +419,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Sophos")
                 self.assertEqual(record.token, "123456789abcedf") 
+                           
+    def test_spycloud(self):
+        records = self.mock_resolve("example.com", "spycloud-domain-verification=123456789-abcedf")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "spycloud")
+                self.assertEqual(record.token, "123456789-abcedf") 
 
     def test_statuspage(self):
         records = self.mock_resolve("example.com", "status-page-domain-verification=test")

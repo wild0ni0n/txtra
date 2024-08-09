@@ -1,0 +1,13 @@
+id: segment
+
+info:
+  name: segment
+  author: wild0ni0n
+  category: Analytics
+
+rule:
+  type: regex
+  regex:
+    - "segment-site-verification=(?P<token>[A-Za-z0-9=]+)"
+  params:
+    - token

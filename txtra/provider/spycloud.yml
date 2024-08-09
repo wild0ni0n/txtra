@@ -1,0 +1,12 @@
+id: spycloud
+
+info:
+  name: spycloud
+  author: wild0ni0n
+  category: Security
+rule:
+  type: regex
+  regex:
+    - "spycloud-domain-verification=(?P<token>[a-f0-9\\-]+)"
+  params:
+    - token
