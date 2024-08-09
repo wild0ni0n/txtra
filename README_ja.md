@@ -4,13 +4,22 @@ txtra は、対象のドメインの名前解決で返される txt レコード
 
 # Installation
 
-`pip install -r requirement.txt`
+```bash
+# Clone 
+$ git clone https://github.com/wild0ni0n/txtra.git
+$ cd txtra
 
+# Install dependencies
+$ pip3 install -r requirements.txt
+
+# Install
+$ python3 setup.py install --user
+```
 # Usage
 
 オプション:
 ```bash
-# txtra -h
+$ txtra -h
 usage: txtra [-h] [-d DOMAIN] [-f FILE] [-s] [-c] [-j]
 
 options:
@@ -25,7 +34,7 @@ options:
 
 例:
 ```bash
-# txtra -d google.com   
+$ txtra -d google.com   
 [INF] Check 1 domains
 [google.com] v=spf1 include:_spf.google.com ~all 
 [google.com] [webex]  [token=479146de172eb01ddee38b1a455ab9e8bb51542ddd7f1fa298557dfa7b22d963] cisco-ci-domain-verification=479146de172eb01ddee38b1a455ab9e8bb51542ddd7f1fa298557dfa7b22d963

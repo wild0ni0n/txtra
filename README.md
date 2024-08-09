@@ -3,15 +3,24 @@
 txtra(txt record analyzer) is a tool that profiles the cloud services used by an organization using the txt records returned by name resolution for the domain in question.
 
 # Installation
+```bash
+# Clone 
+$ git clone https://github.com/wild0ni0n/txtra.git
+$ cd txtra
 
-`pip install -r requirement.txt`
+# Install dependencies
+$ pip3 install -r requirements.txt
+
+# Install
+$ python3 setup.py install --user
+```
 
 # Usage
 
 Options:
 
 ```bash
-# txtra -h
+$ txtra -h
 usage: txtra [-h] [-d DOMAIN] [-f FILE] [-s] [-c] [-j]
 
 options:
@@ -26,7 +35,7 @@ options:
 
 Example:
 ```bash
-# txtra -d google.com   
+$ txtra -d google.com   
 [INF] Check 1 domains
 [google.com] v=spf1 include:_spf.google.com ~all 
 [google.com] [webex]  [token=479146de172eb01ddee38b1a455ab9e8bb51542ddd7f1fa298557dfa7b22d963] cisco-ci-domain-verification=479146de172eb01ddee38b1a455ab9e8bb51542ddd7f1fa298557dfa7b22d963
