@@ -145,7 +145,7 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "bugcrowd")
-                self.assertEqual(record.token, "abcdef123456789")
+                self.assertEqual(record.token, "abcdef0123456789")
 
     def test_citrix1(self):
         records = self.mock_resolve("example.com", "citrix-verification-code=test-1234")
@@ -165,6 +165,42 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Citrix")
                 self.assertEqual(record.token, "test-1234")
 
+    def test_cloudcontrol1(self):
+        records = self.mock_resolve("example.com", "cloudcontrol-verification:abcdef1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.token, "abcdef1234")
+
+    def test_cloudcontrol2(self):
+        records = self.mock_resolve("example.com", "cloudcontrol-verification: abcdef1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.token, "abcdef1234")
+
+    def test_cloudcontrol3(self):
+        records = self.mock_resolve("example.com", "cloudControl-verification:abcdef1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.token, "abcdef1234")
+
+    def test_cloudcontrol4(self):
+        records = self.mock_resolve("example.com", "cloudControl-verification: abcdef1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.token, "abcdef1234")
+
     def test_dailymotion(self):
         records = self.mock_resolve("example.com", "dailymotion-domain-verification=test")
         records.scan(templates=txtra.templates)
@@ -172,6 +208,15 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "dailymotion")
+                self.assertEqual(record.token, "test")
+
+    def test_detectify(self):
+        records = self.mock_resolve("example.com", "detectify-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "detectify")
                 self.assertEqual(record.token, "test")
 
     def test_docusign(self):
@@ -286,6 +331,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Have I been pwned")
                 self.assertEqual(record.token, "test")
 
+    def test_heroku(self):
+        records = self.mock_resolve("example.com", "heroku-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "heroku")
+                self.assertEqual(record.token, "test")
+
     def test_knowbe4(self):
         records = self.mock_resolve("example.com", "knowbe4-site-verification=test")
         records.scan(templates=txtra.templates)
@@ -348,6 +402,15 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "mailigen")
+                self.assertEqual(record.token, "test")
+
+    def test_mailjet(self):
+        records = self.mock_resolve("example.com", "mailjet-domain-validation=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Mailjet")
                 self.assertEqual(record.token, "test")
 
     def test_mailru(self):

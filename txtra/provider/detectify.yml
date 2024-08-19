@@ -1,0 +1,15 @@
+id: detectify
+
+info:
+  name: detectify
+  author: wild0ni0n
+  category: Security
+  references:
+    - https://support.detectify.com/support/solutions/articles/48001061352-verification-with-dns-txt-
+
+rule:
+  type: regex
+  regex:
+    - "detectify-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

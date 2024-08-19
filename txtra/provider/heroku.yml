@@ -1,0 +1,15 @@
+id: heroku
+
+info:
+  name: heroku
+  author: wild0ni0n
+  category: Cloud
+  references:
+    - https://devcenter.heroku.com/articles/custom-domains
+
+rule:
+  type: regex
+  regex:
+    - "heroku-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

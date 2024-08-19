@@ -1,0 +1,13 @@
+id: mailjet
+
+info:
+  name: Mailjet
+  author: wild0ni0n
+  category: Analytics
+
+rule:
+  type: regex
+  regex:
+    - "mailjet-domain-validation=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token
