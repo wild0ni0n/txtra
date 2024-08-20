@@ -1,0 +1,15 @@
+id: site24x7
+
+info:
+  name: Site24x7
+  author: wild0ni0n
+  category: Analytics
+  references:
+    - https://support.site24x7.com/portal/en/kb/articles/how-to-add-domain-verification-key-in-your-dns-txt-record
+
+rule:
+  type: regex
+  regex:
+    - "site24x7-signals-domain-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

@@ -1,15 +1,15 @@
-id: sendinblue
+id: alibaba-cloud
 
 info:
-  name: sendinblue
+  name: Alibaba Cloud
   author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Analytics
   references:
-    - https://help.sendinblue.com/hc/en-us/articles/115000240344-Step-1-Delegating-your-subdomain
+    - https://www.alibabacloud.com/help/ssl-certificate/user-guide/verify-the-ownership-of-a-domain-name
 
 rule:
   type: regex
   regex:
-    - "Sendinblue-code:(?P<token>[0-9a-f]+)"
+    - "aliyun-site-verification=(?P<token>[A-Za-z0-9\\-]+)"
   params:
     - token

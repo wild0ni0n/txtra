@@ -2,7 +2,7 @@ id: yandex
 
 info:
   name: Yandex
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://www.webnots.com/yandex-webmaster-tools/

@@ -2,7 +2,7 @@ id: brave
 
 info:
   name: Brave
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Collaboration
   references:
     - https://support.brave.com/hc/en-us/articles/360021408352-How-do-I-register-or-add-my-sites-channels-to-my-Brave-Creators-account

@@ -2,7 +2,7 @@ id: dailymotion
 
 info:
   name: dailymotion
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://faq.dailymotion.com/hc/en-us/articles/115008958347-Verify-your-domains

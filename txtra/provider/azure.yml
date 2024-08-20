@@ -2,7 +2,7 @@ id: azure
 
 info:
   name: Azure
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
 
 rule:

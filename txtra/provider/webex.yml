@@ -2,7 +2,7 @@ id: webex
 
 info:
   name: webex
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Collaboration
   references:
     - https://help.webex.com/en-us/article/cd6d84/Manage-your-domains

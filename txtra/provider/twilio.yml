@@ -2,7 +2,7 @@ id: twilio
 
 info:
   name: Twilio
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Communication
 
 rule:

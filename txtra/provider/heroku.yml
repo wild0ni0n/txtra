@@ -2,7 +2,7 @@ id: heroku
 
 info:
   name: heroku
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://devcenter.heroku.com/articles/custom-domains

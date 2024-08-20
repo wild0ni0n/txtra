@@ -2,7 +2,7 @@ id: loaderio
 
 info:
   name: loaderio
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Security
   references:
     - https://support.loader.io/article/20-verifying-an-app

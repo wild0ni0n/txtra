@@ -48,6 +48,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Adobe")
                 self.assertEqual(record.token, "test")
 
+    def test_alibaba_cloud(self):
+        records = self.mock_resolve("example.com", "aliyun-site-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Alibaba Cloud")
+                self.assertEqual(record.token, "test")
+
     def test_android_mdm1(self):
         records = self.mock_resolve("example.com", "android-enroll=http://example.com")
         records.scan(templates=txtra.templates)
@@ -492,7 +501,16 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "segment")
                 self.assertEqual(record.token, "test")  
-                           
+                                
+    def test_site24x7(self):
+        records = self.mock_resolve("example.com", "site24x7-signals-domain-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Site24x7")
+                self.assertEqual(record.token, "test")  
+
     def test_sophos(self):
         records = self.mock_resolve("example.com", "sophos-domain-verification=123456789abcedf")
         records.scan(templates=txtra.templates)

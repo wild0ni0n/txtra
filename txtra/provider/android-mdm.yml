@@ -2,7 +2,7 @@ id: android-mdm
 
 info:
   name: android mobile mdm
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Management
   references:
     - https://help.ivanti.com/ld/help/en_US/LDMS/10.0/Mobility/mobl-DNS.htm

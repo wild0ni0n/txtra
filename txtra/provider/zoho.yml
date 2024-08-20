@@ -2,7 +2,7 @@ id: zoho
 
 info:
   name: Zoho Mail
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Mail
   references:
     - https://www.zoho.com/mail/help/adminconsole/domain-verification.html

@@ -2,7 +2,7 @@ id: t-systems
 
 info:
   name: t-systems
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Certificate
   references:
     - https://www.telesec.de/en/serverpass-en/support/domain-control/20-serverpass/640-verifiy-via-dns-entry

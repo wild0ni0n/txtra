@@ -2,7 +2,7 @@ id: facebook
 
 info:
   name: Facebook
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://developers.facebook.com/docs/sharing/domain-verification/

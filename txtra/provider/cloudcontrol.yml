@@ -2,7 +2,7 @@ id: cloudcontrol
 
 info:
   name: cloudControl
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Development
   references:
     - https://github.com/cloudControl/documentation/blob/8a50b66a24a488d467d6986a3ab18b9ee80f9e01/Add-on-Documentation/Alias.md

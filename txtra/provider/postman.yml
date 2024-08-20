@@ -2,7 +2,7 @@ id: postman
 
 info:
   name: Postman
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Development
   references:
     - https://learning.getpostman.com/docs/postman/api_documentation/adding_and_verifying_custom_domains/

@@ -2,7 +2,7 @@ id: anodot
 
 info:
   name: anodot
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Security
   references:
     - https://support.anodot.com/hc/en-us/articles/360002933774-Google-OAuth-Authentication

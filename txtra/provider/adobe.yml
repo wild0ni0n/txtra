@@ -2,7 +2,7 @@ id: adobe
 
 info:
   name: Adobe
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://helpx.adobe.com/enterprise/using/verify-domain-ownership.html

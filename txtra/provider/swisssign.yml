@@ -2,7 +2,7 @@ id: swisssign
 
 info:
   name: swisssign
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Certificate
   references:
     - https://www.swisssign.com/news/detail~newsID=5d91caee-8fc7-4af9-b63b-eadae419ff29~.html

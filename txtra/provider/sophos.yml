@@ -2,7 +2,7 @@ id: sophos
 
 info:
   name: Sophos
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Security
   references:
     - https://docs.sophos.com/central/Customer/help/en-us/central/Customer/tasks/domainownershipgoogle.html

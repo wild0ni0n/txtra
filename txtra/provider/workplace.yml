@@ -2,7 +2,7 @@ id: workplace
 
 info:
   name: Workplace
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Automation
   references:
     - https://community.spiceworks.com/topic/2151848-need-to-verify-a-domain-by-dns-text-record-hosted-by-europe-registry?

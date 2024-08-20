@@ -2,7 +2,7 @@ id: firebase
 
 info:
   name: Firebase
-  author: wild0ni0n
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
   category: Cloud
   references:
     - https://medium.com/@alansimpson/connect-your-domain-or-subdomain-to-firebase-hosting-365c721c395a
