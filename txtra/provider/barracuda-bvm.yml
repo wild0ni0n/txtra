@@ -1,0 +1,15 @@
+id: barracuda-bvm
+
+info:
+  name: Barracuda Vulnerability Manager
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
+  category: Security
+  references:
+    - https://campus.barracuda.com/product/vulnerabilitymanager/doc/51191216/verifying-domains-without-email/
+
+rule:
+  type: regex
+  regex:
+    - "bvm-site-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token

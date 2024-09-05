@@ -48,6 +48,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "Adobe")
                 self.assertEqual(record.token, "test")
 
+    def test_akamai_cloudpiercer(self):
+        records = self.mock_resolve("example.com", "cloudpiercer-verification=test")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Akamai Cloudpiercer")
+                self.assertEqual(record.token, "test")
+
     def test_alibaba_cloud(self):
         records = self.mock_resolve("example.com", "aliyun-site-verification=test")
         records.scan(templates=txtra.templates)
@@ -119,6 +128,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Azure")
                 self.assertEqual(record.token, "test")
+
+    def test_barracuda_bvm(self):
+        records = self.mock_resolve("example.com", "bvm-site-verification=test1234")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Barracuda Vulnerability Manager")
+                self.assertEqual(record.token, "test1234")
 
     def test_blitz(self):
         records = self.mock_resolve("example.com", "blitz=test-1234")

@@ -1,0 +1,15 @@
+id: akamai-cloudpiercer
+
+info:
+  name: Akamai Cloudpiercer
+  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
+  category: Security
+  references:
+    - https://community.akamai.com/customers/s/article/Cloudpiercer-Discovery-Tool?language=en_US
+
+rule:
+  type: regex
+  regex:
+    - "cloudpiercer-verification=(?P<token>[A-Za-z0-9]+)"
+  params:
+    - token
