@@ -2,7 +2,7 @@ id: pardot
 
 info:
   name: pardot
-  author: NetSPI(https://raw.githubusercontent.com/NetSPI/PowerShell/master/Resolve-DnsDomainValidationToken.ps1)
+  author: wild0ni0n
   category: Analytics
   references:
     - https://help.salesforce.com/articleView?id=000313465&language=en_US&type=1&mode=1
@@ -11,5 +11,6 @@ rule:
   type: regex
   regex:
     - "pardot_(.*)=(?P<token>[A-Za-z0-9]+)"
+    - "pardot([0-9]+)=(?P<token>[a-f0-9]+)"
   params:
     - token

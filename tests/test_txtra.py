@@ -492,6 +492,15 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(record.provider, "pardot")
                 self.assertEqual(record.token, "test")
 
+    def test_pardot2(self):
+        records = self.mock_resolve("example.com", "pardot0123456789=abcdef0123456789")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "pardot")
+                self.assertEqual(record.token, "abcdef0123456789")
+
     def test_postman(self):
         records = self.mock_resolve("example.com", "postman-domain-verification=test")
         records.scan(templates=txtra.templates)
