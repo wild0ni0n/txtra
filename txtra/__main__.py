@@ -324,6 +324,10 @@ class Txtra:
             action="store_true",
         )
         # parser.add_argument('-o', 'Specify output file')
+
+        if len(args) == 0:
+            p.print_help()
+            sys.exit(1)
         return p.parse_args(args)
 
 def main():
