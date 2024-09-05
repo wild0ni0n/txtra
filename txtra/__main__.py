@@ -325,14 +325,21 @@ class Txtra:
         )
         # parser.add_argument('-o', 'Specify output file')
 
-        if len(args) == 0:
+        if sys.stdin.isatty() and len(sys.argv) == 1:
             p.print_help()
             sys.exit(1)
+
         return p.parse_args(args)
 
 def main():
     txtra = Txtra()
     args = txtra.argparse_setup(sys.argv[1:])
+
+    if not sys.stdin.isatty():
+        lines = sys.stdin.read().strip().splitlines()
+        domains = list(map(lambda v: Domain(v), lines))
+        txtra.stdout_mode(args, domains)
+        sys.exit(0)
 
     if args.csv and args.json:
         print("`--csv` and `--json` options cannot be used together.")
