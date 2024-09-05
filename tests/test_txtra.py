@@ -473,8 +473,16 @@ class TestApp(unittest.TestCase):
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "Microsoft Office 365")
-                self.assertEqual(record.token, "test123==")                              
-
+                self.assertEqual(record.token, "test123==")  
+                            
+    def test_o3653(self):
+        records = self.mock_resolve("example.com", "MS=ABCDEF0123456789")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Microsoft Office 365")
+                self.assertEqual(record.token, "ABCDEF0123456789")   
     def test_pardot(self):
         records = self.mock_resolve("example.com", "pardot_foo.bar=test")
         records.scan(templates=txtra.templates)
