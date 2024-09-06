@@ -10,6 +10,6 @@ info:
 rule:
   type: regex
   regex:
-    - "google-site-verification=(?P<token>[A-Za-z0-9.]+)"
+    - "google-site-verification=(?P<token>[A-Za-z0-9._-]+)"
   params:
     - token
