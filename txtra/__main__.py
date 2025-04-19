@@ -90,6 +90,11 @@ class Domain:
     def __repr__(self) -> str:
         return self.name
 
+class MatchResult:
+    """Represents a single match result for a TxtRecord."""
+    def __init__(self, template: Template, token: str) -> None:
+        self.template = template
+        self.token = token
 
 class TxtRecord:
     """txt record class"""
@@ -97,33 +102,35 @@ class TxtRecord:
     def __init__(self, value: str) -> None:
         self.value = value
         self.is_matched: bool = False
+        self.matches: List[MatchResult] = []
         self.template: Template
         self.provider: str = ""
         self.category: str
         self.token: str = ""
 
-    def scan(self, templates: List[Template]) -> Optional[Template]:
+    def scan(self, templates: List[Template]) -> List[MatchResult]:
         """Scans txt records to see if the value corresponds to the template
 
         Args:
             templates (List[Template]): List of Template instances
 
         Returns:
-            Optional[Template]: Applicable Templates, or None
+            Optional[List[MatchResult]]: Applicable List[MatchResult]
         """
         for template in templates:
             m = template.match(self.value)
             if m:
-                self.template = template
-                self.provider = self.template.name
-                self.category = self.template.category
+                # self.template = template
+                # self.provider = self.template.name
+                # self.category = self.template.category
                 self.is_matched = True
                 try:
                     self.token = m.group("token")
                 except IndexError:
                     self.token = ""
-                return template
-        return None
+                match_result = MatchResult(template, self.token)
+                self.matches.append(match_result)
+        return self.matches
 
 
 class TxtRecords:
@@ -201,20 +208,21 @@ class Txtra:
                 records.scan(templates=self.templates)
                 for record in records:
                     if record.is_matched:
-                        token_string = (
-                            Fore.CYAN + f" [token={record.token}] "
-                            if record.token
-                            else ""
-                        )
-                        print(
-                            Fore.YELLOW
-                            + f"[{records.domain}]"
-                            + Fore.BLUE
-                            + f" [{record.provider}] "
-                            + token_string
-                            + Fore.YELLOW
-                            + f"{record.value}"
-                        )
+                        for match in record.matches:
+                            token_string = (
+                                Fore.CYAN + f" [token={match.token}] "
+                                if match.token
+                                else ""
+                            )
+                            print(
+                                Fore.YELLOW
+                                + f"[{records.domain}]"
+                                + Fore.BLUE
+                                + f" [{match.template.name}] "
+                                + token_string
+                                + Fore.YELLOW
+                                + f"{record.value}"
+                            )
                     else:
                         print(Fore.YELLOW + f"[{records.domain}] {record.value} ")
 
@@ -245,14 +253,16 @@ class Txtra:
                 with open(path, "a") as f:
                     w = csv.writer(f)
                     for record in records:
-                        w.writerow(
-                            [
-                                records.domain,
-                                record.provider,
-                                record.token,
-                                record.value,
-                            ]
-                        )
+                        if record.is_matched:
+                            for match in record.matches:
+                                w.writerow(
+                                    [
+                                        records.domain,
+                                        match.template.name,
+                                        match.token,
+                                        record.value,
+                                    ]
+                                )
     
     def json_mode(self, args, domains: List[Domain], path="./output.json"):
         """json mode"""
@@ -281,13 +291,13 @@ class Txtra:
                 output_json[str(domain)]['records'] = []
                 for record in records:
                     if record.is_matched:
-                        token_string = record.token if record.token else ""
+                        for match in record.matches:
+                            output_json[str(domain)]['records'].append({
+                                "name": match.template.name,
+                                "token": match.token,
+                                "value": record.value,
+                            })
                         
-                        output_json[str(domain)]['records'].append({
-                            "provider": record.provider,
-                            "token": token_string,
-                            "value": record.value,
-                        })
         with open(path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(output_json))
 
