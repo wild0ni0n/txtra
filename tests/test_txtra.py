@@ -545,7 +545,16 @@ class TestApp(unittest.TestCase):
                 self.assertEqual(records.domain.name, "example.com")
                 self.assertEqual(record.provider, "segment")
                 self.assertEqual(record.token, "test")  
-                                
+
+    def test_sendgrid(self):
+        records = self.mock_resolve("example.com", "v=spf include:_spf.example.com include:u12345678.wl123.sendgrid.net ~all")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "SendGrid")
+                self.assertEqual(record.token, "u12345678.wl123")
+
     def test_site24x7(self):
         records = self.mock_resolve("example.com", "site24x7-signals-domain-verification=test")
         records.scan(templates=txtra.templates)

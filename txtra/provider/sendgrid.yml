@@ -1,0 +1,15 @@
+id: sendgrid
+
+info:
+  name: SendGrid
+  author: wild0ni0n
+  category: Mail
+  references:
+    - https://sendgrid.kke.co.jp/docs/Tutorials/D_Improve_Deliverability/using_whitelabel.html
+
+rule:
+  type: regex
+  regex:
+    - "(?P<token>[a-z0-9.]+)\.sendgrid.net"
+  params:
+    - token
