@@ -30,6 +30,15 @@ class TestApp(unittest.TestCase):
 
         self.assertEqual(r[0].value, TxtRecord(value="test").value)
 
+    def test_activegate_ss(self):
+        records = self.mock_resolve("example.com", "v=spf include:_spf.ecample.com include:_spf.activegate-ss.jp ~all")
+        records.scan(templates=txtra.templates)
+        for record in records:
+            if record.is_matched:
+                self.assertEqual(records.domain.name, "example.com")
+                self.assertEqual(record.provider, "Active! gate SS")
+                self.assertEqual(record.token, "")
+
     def test_adobe_sign(self):
         records = self.mock_resolve("example.com", "adobe-sign-verification=test")
         records.scan(templates=txtra.templates)

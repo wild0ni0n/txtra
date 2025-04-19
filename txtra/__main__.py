@@ -98,9 +98,9 @@ class TxtRecord:
         self.value = value
         self.is_matched: bool = False
         self.template: Template
-        self.provider: str
+        self.provider: str = ""
         self.category: str
-        self.token: str
+        self.token: str = ""
 
     def scan(self, templates: List[Template]) -> Optional[Template]:
         """Scans txt records to see if the value corresponds to the template
@@ -221,6 +221,9 @@ class Txtra:
     def csv_mode(self, args, domains: List[Domain], path="./output.csv"):
         """csv mode"""
 
+        with open(path, "w") as f:
+            f.writelines([])
+
         for domain in domains:
             records = TxtRecords(domain=domain)
 
@@ -242,18 +245,14 @@ class Txtra:
                 with open(path, "a") as f:
                     w = csv.writer(f)
                     for record in records:
-                        if record.is_matched:
-                            token_string = record.token if record.token else ""
-                            w.writerow(
-                                [
-                                    records.domain,
-                                    record.provider,
-                                    token_string,
-                                    record.value,
-                                ]
-                            )
-                        else:
-                            w.writerow([records.domain, record.value])
+                        w.writerow(
+                            [
+                                records.domain,
+                                record.provider,
+                                record.token,
+                                record.value,
+                            ]
+                        )
     
     def json_mode(self, args, domains: List[Domain], path="./output.json"):
         """json mode"""
@@ -335,36 +334,26 @@ def main():
     txtra = Txtra()
     args = txtra.argparse_setup(sys.argv[1:])
 
-    if not sys.stdin.isatty():
-        lines = sys.stdin.read().strip().splitlines()
-        domains = list(map(lambda v: Domain(v), lines))
-        txtra.stdout_mode(args, domains)
-        sys.exit(0)
-
     if args.csv and args.json:
         print("`--csv` and `--json` options cannot be used together.")
         sys.exit(0)
 
     if args.domain:
-        domain = Domain(args.domain)
-        if args.csv:
-            txtra.csv_mode(args, [domain])
-        if args.json:
-            txtra.json_mode(args, [domain])
-        else:
-            txtra.stdout_mode(args, [domain])
-        sys.exit(0)
-
-    if args.file is not None:
+        domains = [Domain(args.domain)]
+    elif args.file is not None:
         lines = args.file.read().splitlines()
         domains = list(map(lambda v: Domain(v), lines))
-        if args.csv:
-            txtra.csv_mode(args, domains)
-        if args.json:
-            txtra.json_mode(args, domains)
-        else:
-            txtra.stdout_mode(args, domains)
-        sys.exit(0)
+    elif not sys.stdin.isatty():
+        lines = sys.stdin.read().strip().splitlines()
+        domains = list(map(lambda v: Domain(v), lines))
+
+    if args.csv:
+        txtra.csv_mode(args, domains)
+    if args.json:
+        txtra.json_mode(args, domains)
+    else:
+        txtra.stdout_mode(args, domains)
+    sys.exit(0)
 
 if __name__ == "__main__":
     main()

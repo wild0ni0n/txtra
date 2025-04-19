@@ -1,0 +1,13 @@
+id: activegate-ss
+
+info:
+  name: Active! gate SS
+  author: wild0ni0n
+  category: Mail
+  references:
+    - https://support.qualitia.com/s/article/000002539
+
+rule:
+  type: regex
+  regex:
+    - "include:_spf.activegate-ss.jp"
