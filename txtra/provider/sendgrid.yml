@@ -10,6 +10,6 @@ info:
 rule:
   type: regex
   regex:
-    - "(?P<token>[a-z0-9.]+)\.sendgrid\.net"
+    - "(?P<token>[a-z0-9.]+)\\.sendgrid\\.net"
   params:
     - token
