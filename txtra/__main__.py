@@ -103,10 +103,6 @@ class TxtRecord:
         self.value = value
         self.is_matched: bool = False
         self.matches: List[MatchResult] = []
-        self.template: Template
-        self.provider: str = ""
-        self.category: str
-        self.token: str = ""
 
     def scan(self, templates: List[Template]) -> List[MatchResult]:
         """Scans txt records to see if the value corresponds to the template
