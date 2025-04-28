@@ -2,13 +2,27 @@ from txtra.__main__ import (
     Domain,
     Txtra,
     TxtRecord,
-    TxtRecords
+    TxtRecords,
+    get_etldp1
 )
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 txtra = Txtra()
+
+class TestDomain(unittest.TestCase):
+    def test_get_etldp1(self):
+        # Basic domain
+        self.assertEqual(get_etldp1("example.com"), "example.com")
+        # Subdomain
+        self.assertEqual(get_etldp1("sub.example.com"), "example.com")
+        # Multiple subdomains
+        self.assertEqual(get_etldp1("a.b.example.com"), "example.com")
+        # Public suffix
+        self.assertEqual(get_etldp1("example.co.uk"), "example.co.uk")
+        # Subdomain of public suffix
+        self.assertEqual(get_etldp1("sub.example.co.uk"), "example.co.uk")
 
 class TestApp(unittest.TestCase):
     def mock_resolve(self, test_domain, test_txt_value) -> TxtRecords:
@@ -30,13 +44,48 @@ class TestApp(unittest.TestCase):
 
         self.assertEqual(r[0].value, TxtRecord(value="test").value)
 
+    def test_spf_recursive_scan(self):
+        domain = Domain("example.com")
+        records = TxtRecords(domain=domain)
+
+        # メインドメインのSPFレコードをモック
+        records.resolve = MagicMock(return_value=[
+            TxtRecord(value="v=spf1 include:_spf.example.com include:thirdparty.com ~all")
+        ])
+        records.records = records.resolve()
+
+        # インクルードされたドメインのSPFレコードをモック
+        included_records = TxtRecords(Domain("_spf.example.com"))
+        included_records.resolve = MagicMock(return_value=[
+            TxtRecord(value="v=spf1 ip4:192.0.2.1 ~all", source_domain="_spf.example.com")
+        ])
+        included_records.records = included_records.resolve()  # モックの戻り値をrecordsに設定
+
+
+        # TxtRecordsの作成をパッチ
+        with patch('txtra.__main__.TxtRecords') as mock_txtrecords:
+            mock_txtrecords.side_effect = lambda domain: included_records if domain.name == "_spf.example.com" else records
+
+            # スキャンを実行
+            records.scan(templates=txtra.templates)
+
+            # 全てのレコードが存在することを確認
+            all_records = [r.value for r in records.records]
+            self.assertEqual(len(all_records), 2)
+            self.assertIn("v=spf1 include:_spf.example.com include:thirdparty.com ~all", all_records)
+            self.assertIn("v=spf1 ip4:192.0.2.1 ~all", all_records)
+
+            # 再帰的にスキャンされたドメインが正しいことを確認
+            scanned_domains = [r.source_domain for r in records.records if r.source_domain]
+            self.assertIn("_spf.example.com", scanned_domains)
+
     def test_activegate_ss(self):
         records = self.mock_resolve("example.com", "v=spf include:_spf.ecample.com include:_spf.activegate-ss.jp ~all")
         records.scan(templates=txtra.templates)
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Active! gate SS")
+                self.assertEqual(record.matches[0].template.name, "Active! gate SS")
                 self.assertEqual(record.token, "")
 
     def test_adobe_sign(self):
@@ -45,7 +94,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Adobe Acrobat Sign")
+                self.assertEqual(record.matches[0].template.name, "Adobe Acrobat Sign")
                 self.assertEqual(record.token, "test")
 
     def test_adobe(self):
@@ -54,7 +103,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Adobe")
+                self.assertEqual(record.matches[0].template.name, "Adobe")
                 self.assertEqual(record.token, "test")
 
     def test_akamai_cloudpiercer(self):
@@ -63,7 +112,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Akamai Cloudpiercer")
+                self.assertEqual(record.matches[0].template.name, "Akamai Cloudpiercer")
                 self.assertEqual(record.token, "test")
 
     def test_alibaba_cloud(self):
@@ -72,7 +121,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Alibaba Cloud")
+                self.assertEqual(record.matches[0].template.name, "Alibaba Cloud")
                 self.assertEqual(record.token, "test")
 
     def test_android_mdm1(self):
@@ -81,7 +130,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "android mobile mdm")
+                self.assertEqual(record.matches[0].template.name, "android mobile mdm")
                 self.assertEqual(record.token, "http://example.com")
 
     def test_android_mdm2(self):
@@ -90,7 +139,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "android mobile mdm")
+                self.assertEqual(record.matches[0].template.name, "android mobile mdm")
                 self.assertEqual(record.token, "http://example.com")
 
     def test_anodot(self):
@@ -99,7 +148,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "anodot")
+                self.assertEqual(record.matches[0].template.name, "anodot")
                 self.assertEqual(record.token, "test")
 
     def test_apple(self):
@@ -108,7 +157,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Apple")
+                self.assertEqual(record.matches[0].template.name, "Apple")
                 self.assertEqual(record.token, "test")
 
     def test_atlassian(self):
@@ -117,7 +166,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Atlassian")
+                self.assertEqual(record.matches[0].template.name, "Atlassian")
                 self.assertEqual(record.token, "test")
 
     def test_aws_ses(self):
@@ -126,7 +175,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Amazon Simple Email")
+                self.assertEqual(record.matches[0].template.name, "Amazon Simple Email")
                 self.assertEqual(record.token, "test")
 
     def test_azure(self):
@@ -135,7 +184,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Azure")
+                self.assertEqual(record.matches[0].template.name, "Azure")
                 self.assertEqual(record.token, "test")
 
     def test_barracuda_bvm(self):
@@ -144,7 +193,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Barracuda Vulnerability Manager")
+                self.assertEqual(record.matches[0].template.name, "Barracuda Vulnerability Manager")
                 self.assertEqual(record.token, "test1234")
 
     def test_blitz(self):
@@ -153,7 +202,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Feedblitz")
+                self.assertEqual(record.matches[0].template.name, "Feedblitz")
                 self.assertEqual(record.token, "test-1234")
 
     def test_botify(self):
@@ -162,7 +211,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Botify")
+                self.assertEqual(record.matches[0].template.name, "Botify")
                 self.assertEqual(record.token, "test")
 
     def test_brave(self):
@@ -171,7 +220,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Brave")
+                self.assertEqual(record.matches[0].template.name, "Brave")
                 self.assertEqual(record.token, "test")
 
     def test_bugcrowd(self):
@@ -180,7 +229,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "bugcrowd")
+                self.assertEqual(record.matches[0].template.name, "bugcrowd")
                 self.assertEqual(record.token, "abcdef0123456789")
 
     def test_citrix1(self):
@@ -189,7 +238,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Citrix")
+                self.assertEqual(record.matches[0].template.name, "Citrix")
                 self.assertEqual(record.token, "test-1234")
 
     def test_citrix2(self):
@@ -198,7 +247,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Citrix")
+                self.assertEqual(record.matches[0].template.name, "Citrix")
                 self.assertEqual(record.token, "test-1234")
 
     def test_cloudcontrol1(self):
@@ -207,7 +256,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.matches[0].template.name, "cloudControl")
                 self.assertEqual(record.token, "abcdef1234")
 
     def test_cloudcontrol2(self):
@@ -216,7 +265,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.matches[0].template.name, "cloudControl")
                 self.assertEqual(record.token, "abcdef1234")
 
     def test_cloudcontrol3(self):
@@ -225,7 +274,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.matches[0].template.name, "cloudControl")
                 self.assertEqual(record.token, "abcdef1234")
 
     def test_cloudcontrol4(self):
@@ -234,7 +283,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "cloudControl")
+                self.assertEqual(record.matches[0].template.name, "cloudControl")
                 self.assertEqual(record.token, "abcdef1234")
 
     def test_dailymotion(self):
@@ -243,7 +292,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "dailymotion")
+                self.assertEqual(record.matches[0].template.name, "dailymotion")
                 self.assertEqual(record.token, "test")
 
     def test_detectify(self):
@@ -252,7 +301,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "detectify")
+                self.assertEqual(record.matches[0].template.name, "detectify")
                 self.assertEqual(record.token, "test")
 
     def test_docusign(self):
@@ -261,7 +310,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "docusign")
+                self.assertEqual(record.matches[0].template.name, "docusign")
                 self.assertEqual(record.token, "test")
 
     def test_dropbox(self):
@@ -270,7 +319,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Dropbox")
+                self.assertEqual(record.matches[0].template.name, "Dropbox")
                 self.assertEqual(record.token, "test")
 
     def test_dynatrace(self):
@@ -279,7 +328,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Dynatrace")
+                self.assertEqual(record.matches[0].template.name, "Dynatrace")
                 self.assertEqual(record.token, "test")
     
     def test_dynatrace2(self):
@@ -288,7 +337,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Dynatrace")
+                self.assertEqual(record.matches[0].template.name, "Dynatrace")
                 self.assertEqual(record.token, "test")
 
     def test_facebook(self):
@@ -297,7 +346,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Facebook")
+                self.assertEqual(record.matches[0].template.name, "Facebook")
                 self.assertEqual(record.token, "test")
 
     def test_firebase(self):
@@ -306,7 +355,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Firebase")
+                self.assertEqual(record.matches[0].template.name, "Firebase")
                 self.assertEqual(record.token, "test-test-123")
 
     def test_globalsign1(self):
@@ -317,7 +366,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Global Sign")
+                self.assertEqual(record.matches[0].template.name, "Global Sign")
                 self.assertEqual(record.token, "test")
 
     def test_globalsign2(self):
@@ -328,7 +377,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Global Sign")
+                self.assertEqual(record.matches[0].template.name, "Global Sign")
                 self.assertEqual(record.token, "test")
 
     def test_gmail(self):
@@ -337,7 +386,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "GMail")
+                self.assertEqual(record.matches[0].template.name, "GMail")
                 self.assertEqual(record.token, "test")
 
     def test_godaddy1(self):
@@ -346,7 +395,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "GoDaddy Web Services")
+                self.assertEqual(record.matches[0].template.name, "GoDaddy Web Services")
                 self.assertEqual(record.token, "test-test.com")
 
     def test_godaddy2(self):
@@ -355,7 +404,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "GoDaddy Web Services")
+                self.assertEqual(record.matches[0].template.name, "GoDaddy Web Services")
                 self.assertEqual(record.token, "/Hoge==")
 
     def test_haveibeenpwned(self):
@@ -364,7 +413,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Have I been pwned")
+                self.assertEqual(record.matches[0].template.name, "Have I been pwned")
                 self.assertEqual(record.token, "test")
 
     def test_heroku(self):
@@ -373,7 +422,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "heroku")
+                self.assertEqual(record.matches[0].template.name, "heroku")
                 self.assertEqual(record.token, "test")
 
     def test_knowbe4(self):
@@ -382,7 +431,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "knowbe4")
+                self.assertEqual(record.matches[0].template.name, "knowbe4")
                 self.assertEqual(record.token, "test")
           
     def test_letsencript(self):
@@ -391,7 +440,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Let's Encrypt")
+                self.assertEqual(record.matches[0].template.name, "Let's Encrypt")
                 self.assertEqual(record.token, "test")      
              
 
@@ -401,7 +450,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "LINE WORKS")
+                self.assertEqual(record.matches[0].template.name, "LINE WORKS")
                 self.assertEqual(record.token, "test")
           
     def test_line_works2(self):
@@ -410,7 +459,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "LINE WORKS")
+                self.assertEqual(record.matches[0].template.name, "LINE WORKS")
                 self.assertEqual(record.token, "test")      
              
     def test_loaderio(self):
@@ -419,7 +468,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "loaderio")
+                self.assertEqual(record.matches[0].template.name, "loaderio")
                 self.assertEqual(record.token, "test") 
              
     def test_logmein(self):
@@ -428,7 +477,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "logmein")
+                self.assertEqual(record.matches[0].template.name, "logmein")
                 self.assertEqual(record.token, "668e156b-f5d3-430e-9944-f1d4385d043e") 
 
     def test_mailigen(self):
@@ -437,7 +486,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "mailigen")
+                self.assertEqual(record.matches[0].template.name, "mailigen")
                 self.assertEqual(record.token, "test")
 
     def test_mailjet(self):
@@ -446,7 +495,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Mailjet")
+                self.assertEqual(record.matches[0].template.name, "Mailjet")
                 self.assertEqual(record.token, "test")
 
     def test_mailru(self):
@@ -455,7 +504,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Mail.Ru")
+                self.assertEqual(record.matches[0].template.name, "Mail.Ru")
                 self.assertEqual(record.token, "test")
 
         records = self.mock_resolve("example.com", "mailru-verification: test")
@@ -463,7 +512,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Mail.Ru")
+                self.assertEqual(record.matches[0].template.name, "Mail.Ru")
                 self.assertEqual(record.token, "test")    
                               
     def test_o3651(self):
@@ -472,7 +521,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Microsoft Office 365")
+                self.assertEqual(record.matches[0].template.name, "Microsoft Office 365")
                 self.assertEqual(record.token, "123456")
                               
     def test_o3652(self):
@@ -481,7 +530,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Microsoft Office 365")
+                self.assertEqual(record.matches[0].template.name, "Microsoft Office 365")
                 self.assertEqual(record.token, "test123==")  
                             
     def test_o3653(self):
@@ -490,7 +539,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Microsoft Office 365")
+                self.assertEqual(record.matches[0].template.name, "Microsoft Office 365")
                 self.assertEqual(record.token, "ABCDEF0123456789")   
     def test_pardot(self):
         records = self.mock_resolve("example.com", "pardot_foo.bar=test")
@@ -498,7 +547,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "pardot")
+                self.assertEqual(record.matches[0].template.name, "pardot")
                 self.assertEqual(record.token, "test")
 
     def test_pardot2(self):
@@ -507,7 +556,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "pardot")
+                self.assertEqual(record.matches[0].template.name, "pardot")
                 self.assertEqual(record.token, "abcdef0123456789")
 
     def test_postman(self):
@@ -516,7 +565,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Postman")
+                self.assertEqual(record.matches[0].template.name, "Postman")
                 self.assertEqual(record.token, "test")
 
     def test_protonmail(self):
@@ -525,7 +574,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "protonmail")
+                self.assertEqual(record.matches[0].template.name, "protonmail")
                 self.assertEqual(record.token, "test")
                             
     def test_sendinblue(self):
@@ -534,7 +583,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "sendinblue")
+                self.assertEqual(record.matches[0].template.name, "sendinblue")
                 self.assertEqual(record.token, "123456789abcedf")   
                              
     def test_segment(self):
@@ -543,7 +592,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "segment")
+                self.assertEqual(record.matches[0].template.name, "segment")
                 self.assertEqual(record.token, "test")  
 
     def test_sendgrid(self):
@@ -552,7 +601,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "SendGrid")
+                self.assertEqual(record.matches[0].template.name, "SendGrid")
                 self.assertEqual(record.token, "u12345678.wl123")
 
     def test_site24x7(self):
@@ -561,7 +610,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Site24x7")
+                self.assertEqual(record.matches[0].template.name, "Site24x7")
                 self.assertEqual(record.token, "test")  
 
     def test_sophos(self):
@@ -570,7 +619,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Sophos")
+                self.assertEqual(record.matches[0].template.name, "Sophos")
                 self.assertEqual(record.token, "123456789abcedf") 
                            
     def test_spycloud(self):
@@ -579,7 +628,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "spycloud")
+                self.assertEqual(record.matches[0].template.name, "spycloud")
                 self.assertEqual(record.token, "123456789-abcedf") 
 
     def test_statuspage(self):
@@ -588,7 +637,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "statuspage")
+                self.assertEqual(record.matches[0].template.name, "statuspage")
                 self.assertEqual(record.token, "test")  
                    
     def test_swisssign(self):
@@ -597,7 +646,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "swisssign")
+                self.assertEqual(record.matches[0].template.name, "swisssign")
                 self.assertEqual(record.token, "test")   
                    
     def test_symantec_mdm(self):
@@ -606,7 +655,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Symantec MDM")
+                self.assertEqual(record.matches[0].template.name, "Symantec MDM")
                 self.assertEqual(record.token, "test")   
                     
     def test_t_systems(self):
@@ -615,7 +664,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "t-systems")
+                self.assertEqual(record.matches[0].template.name, "t-systems")
                 self.assertEqual(record.token, "TEST")   
                     
     def test_teamviewer(self):
@@ -624,7 +673,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "teamviewer")
+                self.assertEqual(record.matches[0].template.name, "teamviewer")
                 self.assertEqual(record.token, "Test")   
                     
     def test_tinfosecurity(self):
@@ -633,7 +682,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "tinfosecurity")
+                self.assertEqual(record.matches[0].template.name, "tinfosecurity")
                 self.assertEqual(record.token, "test")
 
     def test_tmes(self):
@@ -642,7 +691,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Trend Micro")
+                self.assertEqual(record.matches[0].template.name, "Trend Micro")
                 self.assertEqual(record.token, "test")
   
     def test_twilio(self):
@@ -651,7 +700,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Twilio")
+                self.assertEqual(record.matches[0].template.name, "Twilio")
                 self.assertEqual(record.token, "0123456789abcdef")
 
     def test_webaccel1(self):
@@ -660,7 +709,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "SAKURA Web Accelerator")
+                self.assertEqual(record.matches[0].template.name, "SAKURA Web Accelerator")
                 self.assertEqual(record.token, "0123456789abcdef")
 
     def test_webaccel2(self):
@@ -669,7 +718,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "SAKURA Web Accelerator")
+                self.assertEqual(record.matches[0].template.name, "SAKURA Web Accelerator")
                 self.assertEqual(record.token, "01234; 56789; abcdef;")
 
     def test_webex1(self):
@@ -678,7 +727,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.matches[0].template.name, "webex")
                 self.assertEqual(record.token, "01234-5678-9abc-def")
 
     def test_webex2(self):
@@ -687,7 +736,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.matches[0].template.name, "webex")
                 self.assertEqual(record.token, "01234-5678-9abc-def")
 
     def test_webex3(self):
@@ -696,7 +745,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.matches[0].template.name, "webex")
                 self.assertEqual(record.token, "0123456789abcdef")
 
     def test_webex4(self):
@@ -705,7 +754,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "webex")
+                self.assertEqual(record.matches[0].template.name, "webex")
                 self.assertEqual(record.token, "01234-5678-9abc-def")
 
     def test_wmail(self):
@@ -714,7 +763,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "wmail")
+                self.assertEqual(record.matches[0].template.name, "wmail")
                 self.assertEqual(record.token, "0123456789abcdef")
 
     def test_workplace(self):
@@ -723,7 +772,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Workplace")
+                self.assertEqual(record.matches[0].template.name, "Workplace")
                 self.assertEqual(record.token, "test")
 
     def test_wrike(self):
@@ -732,7 +781,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "wrike")
+                self.assertEqual(record.matches[0].template.name, "wrike")
                 self.assertEqual(record.token, "test")
 
     def test_yandex(self):
@@ -741,7 +790,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Yandex")
+                self.assertEqual(record.matches[0].template.name, "Yandex")
                 self.assertEqual(record.token, "test")
 
     def test_zapier(self):
@@ -750,7 +799,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Zapier")
+                self.assertEqual(record.matches[0].template.name, "Zapier")
                 self.assertEqual(record.token, "test")
 
     def test_zoho(self):
@@ -759,7 +808,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Zoho Mail")
+                self.assertEqual(record.matches[0].template.name, "Zoho Mail")
                 self.assertEqual(record.token, "test")
 
     def test_zoom(self):
@@ -768,7 +817,7 @@ class TestApp(unittest.TestCase):
         for record in records:
             if record.is_matched:
                 self.assertEqual(records.domain.name, "example.com")
-                self.assertEqual(record.provider, "Zoom")
+                self.assertEqual(record.matches[0].template.name, "Zoom")
                 self.assertEqual(record.token, "test")
 if __name__ == "__main__":
     unittest.main()

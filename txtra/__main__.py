@@ -11,6 +11,21 @@ from dns import resolver
 from colorama import Fore
 from importlib import resources
 import yaml
+import tldextract
+
+def get_etldp1(domain: str) -> str:
+    """Get eTLD+1 from domain
+
+    Args:
+        domain (str): Domain name
+
+    Returns:
+        str: eTLD+1 domain
+    """
+    ext = tldextract.extract(domain)
+    if ext.suffix == "":
+        return ext.domain
+    return ext.domain + "." + ext.suffix
 
 
 class Template:
@@ -99,10 +114,27 @@ class MatchResult:
 class TxtRecord:
     """txt record class"""
 
-    def __init__(self, value: str) -> None:
+    def __init__(self, value: str, source_domain: Optional[str] = None) -> None:
         self.value = value
+        self.source_domain = source_domain 
         self.is_matched: bool = False
         self.matches: List[MatchResult] = []
+        self.is_spf = value.startswith("v=spf1")
+        self.include_domains = self._extract_include_domains() if self.is_spf else []
+
+    def _extract_include_domains(self) -> List[str]:
+        """Extract include domains from SPF record
+
+        Returns:
+            List[str]: List of domains found in include: directives
+        """
+        domains = []
+        parts = self.value.split()
+        for part in parts:
+            if part.startswith("include:"):
+                domain = part.split(":", 1)[1]
+                domains.append(domain)
+        return domains
 
     def scan(self, templates: List[Template]) -> List[MatchResult]:
         """Scans txt records to see if the value corresponds to the template
@@ -136,6 +168,7 @@ class TxtRecords:
         self.domain: Domain = domain
         self.records: List[TxtRecord] = []
         self.is_matched = False
+        self.scanned_domains = set()  # Keep track of already scanned domains
 
     def resolve(self) -> List[TxtRecord]:
         """Perform DNS resolution of txt records
@@ -149,17 +182,48 @@ class TxtRecords:
             raise resolver.LifetimeTimeout from e
         for rdata in answers:  # type:ignore
             for data in rdata.strings:
-                self.records.append(TxtRecord(data.decode("utf-8")))
+                self.records.append(TxtRecord(data.decode("utf-8"), source_domain=self.domain.name))
         return self.records
 
-    def scan(self, templates: List[Template]):
+    def scan(self, templates: List[Template], base_domain: Optional[str] = None):
         """Scans txt records to see if the value corresponds to the template
 
         Args:
             templates (List[Template]): List of Template instances
+            base_domain (Optional[str]): Base domain for SPF include validation
         """
+        if base_domain is None:
+            base_domain = get_etldp1(str(self.domain))
+
+        # Add current domain to scanned domains set
+        if not hasattr(self, "scanned_domains"):
+            self.scanned_domains = set()
+        self.scanned_domains.add(str(self.domain))
+
         for record in self.records:
             record.scan(templates)
+
+            # If this is an SPF record, check for includes
+            if record.is_spf:
+                for include_domain in record.include_domains:
+                    # Check if the include domain matches the base domain
+                    if get_etldp1(include_domain) == base_domain:
+                        # Skip if we've already scanned this domain
+                        if include_domain in self.scanned_domains:
+                            continue
+
+                        # Recursively scan the included domain
+                        included_records = TxtRecords(Domain(include_domain))
+                        try:
+                            included_records.resolve()
+                            included_records.scanned_domains = self.scanned_domains
+                            included_records.scan(templates, base_domain)
+                            # Add the records from the included domain
+                            for included_record in included_records.records:
+                                included_record.source_domain = include_domain
+                                self.records.append(included_record)  # 再帰的に追加
+                        except Exception as e:
+                            print(f"Failed to resolve included domain {include_domain}: {e}")
 
     def __iter__(self):
         yield from self.records
@@ -212,7 +276,7 @@ class Txtra:
                             )
                             print(
                                 Fore.YELLOW
-                                + f"[{records.domain}]"
+                                + f"[{record.source_domain}]"
                                 + Fore.BLUE
                                 + f" [{match.template.name}] "
                                 + token_string
@@ -220,13 +284,14 @@ class Txtra:
                                 + f"{record.value}"
                             )
                     else:
-                        print(Fore.YELLOW + f"[{records.domain}] {record.value} ")
+                        print(Fore.YELLOW + f"[{record.source_domain}] {record.value} ")
 
     def csv_mode(self, args, domains: List[Domain], path="./output.csv"):
         """csv mode"""
 
-        with open(path, "w") as f:
-            f.writelines([])
+        with open(path, "w", newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            w.writerow(["Domain", "Source Domain", "Template", "Token", "Value"])
 
         for domain in domains:
             records = TxtRecords(domain=domain)
@@ -240,13 +305,13 @@ class Txtra:
                 continue  # Optional: handle other exceptions and continue to the next iteration
 
             if args.no_scan:
-                with open(path, "a") as f:
+                with open(path, "a", newline='', encoding='utf-8') as f:
                     w = csv.writer(f)
                     for record in records:
-                        w.writerow([records.domain, record.value])
+                        w.writerow([records.domain, "", "", "", record.value])
             else:
                 records.scan(templates=self.templates)
-                with open(path, "a") as f:
+                with open(path, "a", newline='', encoding='utf-8') as f:
                     w = csv.writer(f)
                     for record in records:
                         if record.is_matched:
@@ -254,11 +319,14 @@ class Txtra:
                                 w.writerow(
                                     [
                                         records.domain,
+                                        record.source_domain,
                                         match.template.name,
                                         match.token,
                                         record.value,
                                     ]
                                 )
+                        else:
+                            w.writerow([records.domain, record.source_domain, "", "", record.value])
     
     def json_mode(self, args, domains: List[Domain], path="./output.json"):
         """json mode"""
@@ -288,11 +356,24 @@ class Txtra:
                 for record in records:
                     if record.is_matched:
                         for match in record.matches:
-                            output_json[str(domain)]['records'].append({
+                            if record.source_domain not in output_json:
+                                output_json[record.source_domain] = {
+                                    'raw_records': [],
+                                    'records': []
+                                }
+
+                            output_json[record.source_domain]['records'].append({
                                 "name": match.template.name,
                                 "token": match.token,
                                 "value": record.value,
                             })
+                    else:
+                        if record.source_domain not in output_json:
+                            output_json[record.source_domain] = {
+                                'raw_records': [],
+                                'records': []
+                            }
+                        output_json[record.source_domain]['raw_records'].append(record.value)
                         
         with open(path, 'w', encoding='utf-8') as f:
             f.write(json.dumps(output_json))
