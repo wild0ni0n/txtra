@@ -5,11 +5,6 @@ txtra は、対象のドメインの名前解決で返される txt レコード
 # Installation
 
 ```bash
-# Clone 
-$ git clone https://github.com/wild0ni0n/txtra.git
-$ cd txtra
-
-# Install
 $ pip3 install txtra
 ```
 

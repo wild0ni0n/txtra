@@ -5,11 +5,6 @@ txtra(txt record analyzer) is a tool that profiles the cloud services used by an
 # Installation
 
 ```bash
-# Clone 
-$ git clone https://github.com/wild0ni0n/txtra.git
-$ cd txtra
-
-# Install
 $ pip3 install txtra
 ```
 
