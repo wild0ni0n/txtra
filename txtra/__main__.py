@@ -185,20 +185,21 @@ class TxtRecords:
                 self.records.append(TxtRecord(data.decode("utf-8"), source_domain=self.domain.name))
         return self.records
 
-    def scan(self, templates: List[Template], base_domain: Optional[str] = None):
+    def scan(self, templates: List[Template], base_domain: Optional[str] = None) -> List[TxtRecord]:
         """Scans txt records to see if the value corresponds to the template
 
         Args:
             templates (List[Template]): List of Template instances
             base_domain (Optional[str]): Base domain for SPF include validation
+        Returns:
+            List[TxtRecord]: All scanned TxtRecord instances, including those from included domains.
         """
         if base_domain is None:
             base_domain = get_etldp1(str(self.domain))
 
-        # Add current domain to scanned domains set
-        if not hasattr(self, "scanned_domains"):
-            self.scanned_domains = set()
-        self.scanned_domains.add(str(self.domain))
+        if str(self.domain) not in self.scanned_domains:
+            self.scanned_domains.add(str(self.domain))
+            self.resolve()
 
         for record in self.records:
             record.scan(templates)
@@ -213,17 +214,15 @@ class TxtRecords:
                             continue
 
                         # Recursively scan the included domain
-                        included_records = TxtRecords(Domain(include_domain))
+                        included_records_container = TxtRecords(Domain(include_domain))
                         try:
-                            included_records.resolve()
-                            included_records.scanned_domains = self.scanned_domains
-                            included_records.scan(templates, base_domain)
-                            # Add the records from the included domain
-                            for included_record in included_records.records:
-                                included_record.source_domain = include_domain
-                                self.records.append(included_record)  # 再帰的に追加
+                            # included_records.resolve()
+                            included_records_container.scanned_domains = self.scanned_domains
+                            included_records = included_records_container.scan(templates, base_domain)
+                            self.records.extend(included_records)
                         except Exception as e:
                             print(f"Failed to resolve included domain {include_domain}: {e}")
+        return self.records
 
     def __iter__(self):
         yield from self.records
@@ -251,15 +250,6 @@ class Txtra:
         print("[INF] No Scan Mode") if args.no_scan else ""
         for domain in domains:
             records = TxtRecords(domain=domain)
-            try:
-                records.resolve()
-            except resolver.NoAnswer:
-                continue
-            except resolver.LifetimeTimeout:
-                continue
-            except Exception as e:
-                print(f"An unexpected error occurred: {e}")
-                continue  # Optional: handle other exceptions and continue to the next iteration
 
             if args.no_scan:
                 for record in records:
