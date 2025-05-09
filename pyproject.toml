@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "txtra"
+version = "0.1.0"
+authors = [
+  { name="wild0ni0n" },
+]
+description = "txtra(txt record analyzer) is a tool that profiles the cloud services used by an organization using the txt records returned by name resolution for the domain in question."
+readme = "README.md"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = [
+    "colorama==0.4.6",
+    "dnspython==2.7.0",
+    "PyYAML==6.0.1",
+    "tldextract==5.3.0"
+]
+
+[project.scripts]
+txtra = "txtra.__main__:main"
+
+[project.urls]
+"Homepage" = "https://github.com/wild0ni0n/txtra"
+"Bug Tracker" = "https://github.com/wild0ni0n/txtra/issues"
