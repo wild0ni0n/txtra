@@ -3,16 +3,14 @@
 txtra(txt record analyzer) is a tool that profiles the cloud services used by an organization using the txt records returned by name resolution for the domain in question.
 
 # Installation
+
 ```bash
 # Clone 
 $ git clone https://github.com/wild0ni0n/txtra.git
 $ cd txtra
 
-# Install dependencies
-$ pip3 install -r requirements.txt
-
 # Install
-$ python3 setup.py install --user
+$ pip3 install txtra
 ```
 
 # Usage

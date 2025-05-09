@@ -9,12 +9,10 @@ txtra は、対象のドメインの名前解決で返される txt レコード
 $ git clone https://github.com/wild0ni0n/txtra.git
 $ cd txtra
 
-# Install dependencies
-$ pip3 install -r requirements.txt
-
 # Install
-$ python3 setup.py install --user
+$ pip3 install txtra
 ```
+
 # Usage
 
 オプション:
